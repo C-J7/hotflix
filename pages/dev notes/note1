@@ -1,0 +1,9 @@
+1. use https://swiperjs.com/ for the movie swiper feel. 
+
+2. add a banner bg image with a darkened feel. (check img ss for exact css).
+
+3. use https://ionic.io/ionicons for icons to create that provisional feel with the buttons and icons. 
+
+for the preview images: "use Youtube iframe Api for the feature" (Couldnt find a solution to the ssr issue of nextjs and superembed.stream) (Done)
+
+4. the user profile and the recommendation finetune

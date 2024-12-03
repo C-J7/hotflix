@@ -40,3 +40,20 @@ a {
     color-scheme: dark;
   }
 }
+
+
+/* Add to your global CSS */
+@font-face {
+  font-family: "GeistSans";
+  src: url("/fonts/GeistVF.woff");
+  font-weight: 100 900;
+  font-display: swap; /* This helps to avoid FOUT */
+}
+
+@font-face {
+  font-family: "GeistMono";
+  src: url("/fonts/GeistMonoVF.woff");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
