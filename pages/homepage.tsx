@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Header from "@/components/Header";
 
 interface Movie {
   id: number;
@@ -17,19 +18,18 @@ interface Genre {
 
 const Homepage: React.FC = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
-  const [genres, setGenres] = useState<Genre[]>([]); // Added for filtering by genre
+  const [genres, setGenres] = useState<Genre[]>([]);
   const [selectedGenre, setSelectedGenre] = useState<number | null>(null);
-  const [page, setPage] = useState(1); // Added for pagination
+  const [page, setPage] = useState(1);
+  const [query, setQuery] = useState<string | null>(null);
 
-   // Fetch movies from TMDB API
-   const fetchMovies = async () => {
+  const fetchMovies = async () => {
     try {
       const response = await axios.get(
         `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&page=${page}`
       );
       const moviesWithTrailers = await Promise.all(
         response.data.results.map(async (movie: Movie) => {
-          // Fetch movie trailer
           const trailerResponse = await axios.get(
             `https://api.themoviedb.org/3/movie/${movie.id}/videos?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`
           );
@@ -38,7 +38,7 @@ const Homepage: React.FC = () => {
           );
           return {
             ...movie,
-            youtube_trailer_id: trailer ? trailer.key : "", // Store YouTube trailer key
+            youtube_trailer_id: trailer ? trailer.key : "",
           };
         })
       );
@@ -48,7 +48,6 @@ const Homepage: React.FC = () => {
     }
   };
 
-  // Fetch genres for filtering
   const fetchGenres = async () => {
     try {
       const response = await axios.get(
@@ -62,27 +61,37 @@ const Homepage: React.FC = () => {
 
   useEffect(() => {
     fetchMovies();
-    fetchGenres(); // Fetch genres once
+    fetchGenres();
   }, [page]);
 
-  // Handle filtering by genre
   const handleFilterByGenre = (genreId: number | null) => {
     setSelectedGenre(genreId);
-    setMovies([]); // Clear previous results
-    setPage(1); // Reset pagination
+    setQuery(null); // Clear search query when filtering by genre
+    setMovies([]);
+    setPage(1);
   };
 
-  // Filter movies based on selected genre
-  const filteredMovies = selectedGenre
-    ? movies.filter((movie) => movie.genre_ids.includes(selectedGenre))
-    : movies;
+  const handleSearch = (query: string) => {
+    setQuery(query);
+    setSelectedGenre(null); // Clear genre filter when searching by query
+    setMovies([]);
+    setPage(1);
+  };
 
-  // Handle adding movies to Watchlist
+  const filteredMovies = movies.filter((movie) => {
+    if (selectedGenre && !movie.genre_ids.includes(selectedGenre)) {
+      return false;
+    }
+    if (query && !movie.title.toLowerCase().includes(query.toLowerCase())) {
+      return false;
+    }
+    return true;
+  });
+
   const handleAddToWatchlist = (movie: Movie) => {
     const savedWatchlist = localStorage.getItem("watchlist");
     let watchlist = savedWatchlist ? JSON.parse(savedWatchlist) : [];
 
-    // Check if the movie is already in the watchlist
     if (!watchlist.some((item: Movie) => item.id === movie.id)) {
       watchlist.push(movie);
       localStorage.setItem("watchlist", JSON.stringify(watchlist));
@@ -94,131 +103,120 @@ const Homepage: React.FC = () => {
 
   return (
     <div>
-      {/* Filter Bar for Genre */}
-      <div style={{ marginBottom: "1rem" }}>
-        <label>Filter by Genre:</label>
-        <select
-          onChange={(e) => handleFilterByGenre(Number(e.target.value) || null)}
-          style={{ marginLeft: "1rem" }}
-        >
-          <option value="">All Genres</option>
-          {genres.map((genre) => (
-            <option key={genre.id} value={genre.id}>
-              {genre.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-       {/* Watchlist Button */}
-       <button
-        onClick={() => (window.location.href = "/watchlist")}
-        style={{
-          marginBottom: "1rem",
-          padding: "0.5rem 1rem",
-          backgroundColor: "#e50914",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-        }}
-      >
-        Watchlist
-      </button>
-
-      <div
-        style={{
-          padding: "2rem",
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-          gap: "1rem",
-        }}
-      >
-        {filteredMovies.map((movie) => (
-          <div
-            key={movie.id}
-            style={{
-              backgroundColor: "#333",
-              color: "white",
-              borderRadius: "8px",
-              overflow: "hidden",
-              textAlign: "center",
-              padding: "1rem",
-            }}
+      <Header onSearch={handleSearch} />
+      <div style={{ marginTop: "5rem" }}> {/* Add margin to avoid overlap with fixed header */}
+        <div style={{ marginBottom: "1rem" }}>
+          <label>Filter by Genre:</label>
+          <select
+            onChange={(e) => handleFilterByGenre(Number(e.target.value) || null)}
+            style={{ marginLeft: "1rem" }}
           >
-            <img
-              src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-              alt={movie.title}
-              style={{ width: "100%", height: "300px", objectFit: "cover" }}
-            />
-            <h3 style={{ margin: "1rem 0" }}>{movie.title}</h3>
-            {/* Display Genre */}
-            <p>
-              Genres:{" "}
-              {movie.genre_ids
-                .map((id) => genres.find((genre) => genre.id === id)?.name)
-                .join(", ")}
-            </p>
+            <option value="">All Genres</option>
+            {genres.map((genre) => (
+              <option key={genre.id} value={genre.id}>
+                {genre.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
+        <button
+          onClick={() => (window.location.href = "/watchlist")}
+          style={{
+            marginBottom: "1rem",
+            padding: "0.5rem 1rem",
+            backgroundColor: "#e50914",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+          }}
+        >
+          Watchlist
+        </button>
 
-
-                {/* Watch Preview Button */}
-                <button
-              onClick={() =>
-                window.location.href = `/streaming?video_id=${movie.youtube_trailer_id}`
-              }
+        <div
+          style={{
+            padding: "2rem",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gap: "1rem",
+          }}
+        >
+          {filteredMovies.map((movie) => (
+            <div
+              key={movie.id}
               style={{
-                backgroundColor: "#FFD700",
-                color: "black",
-                border: "none",
-                padding: "0.5rem 1rem",
-                fontSize: "1rem",
-                borderRadius: "4px",
-                cursor: "pointer",
-              }}
-            >
-              Watch Preview
-            </button>
-
-
-
-
-            {/* Add to Watchlist Button */}
-            <button
-              onClick={() => handleAddToWatchlist(movie)}
-              style={{
-                backgroundColor: "#e50914",
+                backgroundColor: "#333",
                 color: "white",
-                border: "none",
-                padding: "0.5rem 1rem",
-                fontSize: "1rem",
-                borderRadius: "4px",
-                cursor: "pointer",
+                borderRadius: "8px",
+                overflow: "hidden",
+                textAlign: "center",
+                padding: "1rem",
               }}
             >
-              Add to Watchlist
-            </button>
-          </div>
-        ))}
-      </div>
+              <img
+                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                alt={movie.title}
+                style={{ width: "100%", height: "300px", objectFit: "cover" }}
+              />
+              <h3 style={{ margin: "1rem 0" }}>{movie.title}</h3>
+              <p>
+                Genres:{" "}
+                {movie.genre_ids
+                  .map((id) => genres.find((genre) => genre.id === id)?.name)
+                  .join(", ")}
+              </p>
+              <button
+                onClick={() =>
+                  window.location.href = `/streaming?video_id=${movie.youtube_trailer_id}`
+                }
+                style={{
+                  backgroundColor: "#FFD700",
+                  color: "black",
+                  border: "none",
+                  padding: "0.5rem 1rem",
+                  fontSize: "1rem",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                }}
+              >
+                Watch Preview
+              </button>
+              <button
+                onClick={() => handleAddToWatchlist(movie)}
+                style={{
+                  backgroundColor: "#e50914",
+                  color: "white",
+                  border: "none",
+                  padding: "0.5rem 1rem",
+                  fontSize: "1rem",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                }}
+              >
+                Add to Watchlist
+              </button>
+            </div>
+          ))}
+        </div>
 
-      {/* Pagination: Load More Button */}
-      <button
-        onClick={() => setPage((prevPage) => prevPage + 1)}
-        style={{
-          margin: "1rem auto",
-          display: "block",
-          padding: "0.5rem 1rem",
-          backgroundColor: "#333",
-          color: "white",
-          border: "none",
-          borderRadius: "4px",
-        }}
-      >
-        Load More
-      </button>
+        <button
+          onClick={() => setPage((prevPage) => prevPage + 1)}
+          style={{
+            margin: "1rem auto",
+            display: "block",
+            padding: "0.5rem 1rem",
+            backgroundColor: "#333",
+            color: "white",
+            border: "none",
+            borderRadius: "4px",
+          }}
+        >
+          Load More
+        </button>
+      </div>
     </div>
   );
 };
 
 export default Homepage;
-

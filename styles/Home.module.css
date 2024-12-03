@@ -30,8 +30,16 @@
 .main {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 32px;
   grid-row-start: 2;
+}
+
+.contentWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px; 
 }
 
 .main ol {
@@ -65,20 +73,24 @@
   appearance: none;
   border-radius: 128px;
   height: 48px;
-  padding: 0 20px;
-  border: none;
+  padding: 0 24px;
   border: 1px solid transparent;
-  transition:
-    background 0.2s,
-    color 0.2s,
-    border-color 0.2s;
+  transition: 
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    transform 0.3s ease;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 16px;
   line-height: 20px;
-  font-weight: 500;
+  font-weight: 600;
+}
+
+.ctas a:hover {
+  transform: scale(1.05);
 }
 
 a.primary {
@@ -217,11 +229,6 @@ a.secondary {
   text-align: center;
 }
 
-.title {
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-}
 
 .watchlistbutton{
     margin-bottom: 1rem;
@@ -232,3 +239,155 @@ a.secondary {
     border-radius: 4px;
     cursor: pointer;
   }
+.ExploreButton {
+  padding: 0.8rem 1.5rem;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.ExploreButton:hover {
+  background-color: #e5c009;
+  transform: scale(1.1);
+}
+
+.Maintext {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 0rem;
+}
+
+.subtitle {
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+  margin-top: 0rem;
+  font-style: italic; 
+  font-family: 'Times New Roman', Times, serif; 
+}
+
+.banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  transition: background-image 1s ease-in-out;
+  z-index: -1; /* Ensure the banner is behind other content */
+}
+
+.banner::after{
+  position: absolute;
+  content: "";
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #333;
+  color: white;
+  z-index: 1000;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+
+.iconButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-size: 1.2rem;
+}
+
+.logo {
+  height: 40px;
+}
+
+.rightIcons {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
+}
+
+
+.searchBar {
+  position: relative;
+}
+
+.searchIcon {
+  background: none;
+  padding: 0.6rem;
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-size: 1.2rem;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.searchIcon:hover {
+  color: rgb(228, 61, 61);
+  transform: scale(1.3);
+}
+
+.searchForm {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  background-color: rgb(228, 61, 61);
+  border-radius: 8px;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: width 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  width: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.searchForm.open {
+  width: 250px; 
+  opacity: 1;
+}
+
+.searchInput {
+  border: none;
+  outline: none;
+  padding: 0.5rem;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.closeIcon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-size: 1.5rem;
+  margin-left: 0.5rem;
+}

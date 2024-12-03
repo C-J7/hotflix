@@ -9,11 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@emotion/react": "^11.13.5",
-    "@emotion/styled": "^11.13.5",
     "@ionic/react": "^8.4.1",
     "@ionic/react-router": "^8.4.1",
     "@mui/material": "^6.1.8",
+    "@next/font": "^14.2.15",
     "@react-oauth/google": "^0.12.1",
     "axios": "^1.7.7",
     "bcryptjs": "^2.4.3",
