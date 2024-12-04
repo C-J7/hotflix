@@ -1,96 +1,90 @@
 .carouselContainer {
-    margin: 2rem 0;
-    padding: 0 1rem;
-    background-color: #111;
-    border-radius: 8px;
-    position: relative; /* Ensure relative positioning for fixed child elements */
-  }
-  
-  .carouselTitle {
-    color: #ffd700;
-    font-size: 1.5rem;
-    text-align: left;
-    margin-left: 1rem;
-  }
-  
-  .carouselWrapper {
-    display: flex;
-    align-items: center;
-    position: relative;
-  }
-  
-  .scrollContainer {
-    display: flex;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    padding: 1rem 0;
-    scrollbar-width: none;
-  }
-  
-  .scrollContainer::-webkit-scrollbar {
-    display: none;
-  }
-  
-  .carouselItem {
-    flex: 0 0 auto;
-    margin: 0 0.5rem;
-    width: 150px;
-    transition: transform 0.3s ease;
-  }
-  
-  .carouselItem:hover {
-    transform: scale(1.1); /* Hover effect for movies */
-  }
-  
-  .moviePoster {
-    width: 100%;
-    height: 225px;
-    border-radius: 8px;
-    object-fit: cover;
-  }
-  
-  .movieTitle {
-    color: white;
-    font-size: 1rem;
-    text-align: center;
-    margin: 0.5rem 0;
-  }
-  
-  .previewButton {
-    background-color: #e50914;
-    color: white;
-    border: none;
-    padding: 0.5rem;
-    font-size: 0.9rem;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .previewButton:hover {
-    background-color: #f40612;
-  }
-  
-  .navButtonLeft,
-  .navButtonRight {
-    color: white;
-    font-size: 2.5rem;
-    cursor: pointer;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 2;
-  }
-  
-  .navButtonLeft:hover,
-  .navButtonRight:hover {
-    color: #ffd700;
-  }
-  
-  .navButtonLeft {
-    left: -25px;
-  }
-  
-  .navButtonRight {
-    right: -25px;
-  }
-  
+  margin: 2rem 0;
+  padding: 0 1rem;
+  background-color: #111;
+  border-radius: 8px;
+  position: relative; 
+  overflow: hidden; 
+}
+
+.carouselTitle {
+  color: #ffd700;
+  font-size: 1.5rem;
+  margin-left: 1rem;
+}
+
+.carouselWrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.scrollContainer {
+  display: flex;
+  overflow-x: scroll;
+  scroll-behavior: smooth;
+  padding: 1rem 0;
+  width: calc(100% - 100px); 
+}
+
+.scrollContainer::-webkit-scrollbar {
+  display: none; 
+}
+
+.carouselItem {
+  flex: 0 0 200px; 
+  margin-right: 15px;
+  transition: transform 0.3s ease;
+}
+
+.carouselItem:hover {
+  transform: scale(1.1); 
+}
+
+.moviePoster {
+  width: 100%;
+  height: 225px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.movieTitle {
+  color: white;
+  font-size: 1rem;
+  text-align: center;
+  margin: 0.5rem 0;
+}
+
+.previewButton {
+  background-color: #e50914;
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.previewButton:hover {
+  background-color: #f40612;
+}
+
+/* Scroll Buttons Styling */
+.navButtonLeft,
+.navButtonRight {
+  color: white;
+  font-size: 2.5rem;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+.navButtonLeft {
+  left: 5px; 
+}
+
+.navButtonRight {
+  right: 5px; 
+}

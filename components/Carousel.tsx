@@ -1,5 +1,5 @@
 import React from "react";
-import { IoChevronBackCircle, IoChevronForwardCircle } from "react-icons/io5"; // Ionicons for arrows
+import { IoChevronBackCircle, IoChevronForwardCircle } from "react-icons/io5"; 
 import styles from "@/styles/Carousel.module.css";
 
 interface CarouselProps {
@@ -26,9 +26,13 @@ const Carousel: React.FC<CarouselProps> = ({ title, movies }) => {
   return (
     <div className={styles.carouselContainer}>
       <h2 className={styles.carouselTitle}>{title}</h2>
+
       <div className={styles.carouselWrapper}>
         {/* Left Scroll Button */}
-        <IoChevronBackCircle className={styles.navButtonLeft} onClick={scrollLeft} />
+        <IoChevronBackCircle
+          className={styles.navButtonLeft}
+          onClick={scrollLeft}
+        />
 
         {/* Movie Scroll Area */}
         <div id={title} className={styles.scrollContainer}>
@@ -53,12 +57,13 @@ const Carousel: React.FC<CarouselProps> = ({ title, movies }) => {
         </div>
 
         {/* Right Scroll Button */}
-        <IoChevronForwardCircle className={styles.navButtonRight} onClick={scrollRight} />
+        <IoChevronForwardCircle
+          className={styles.navButtonRight}
+          onClick={scrollRight}
+        />
       </div>
     </div>
   );
 };
 
 export default Carousel;
-
-

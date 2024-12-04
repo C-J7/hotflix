@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "@/styles/Home.module.css";
+import Header from "@/components/Header";
 
 interface Movie {
   id: number;
@@ -56,6 +57,8 @@ const Watchlist: React.FC = () => {
   }
 
   return (
+    <div>
+    <Header onSearch={() => {}} />
     <div className={styles.page}>
       <main className={styles.main}>
         <h1 className={styles.title}>Your Watchlist</h1>
@@ -77,7 +80,7 @@ const Watchlist: React.FC = () => {
                   onClick={() =>
                     window.location.href = `/streaming?video_id=${movie.youtube_trailer_id}`
                   }
-                  className={styles.watchlistbutton}
+                  className={styles.watchlistPreviewButton}
                 >
                   Preview
                 </button>
@@ -86,6 +89,7 @@ const Watchlist: React.FC = () => {
           </div>
         )}
       </main>
+    </div>
     </div>
   );
 };

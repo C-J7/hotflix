@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Header from "@/components/Header";
+import styles from "@/styles/Home.module.css";
 
 interface Movie {
   id: number;
@@ -22,9 +23,11 @@ const Homepage: React.FC = () => {
   const [selectedGenre, setSelectedGenre] = useState<number | null>(null);
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false); // Track current loading state
 
   const fetchMovies = async () => {
     try {
+      setLoading(true); //Starts loading
       const response = await axios.get(
         `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&page=${page}`
       );
@@ -42,9 +45,11 @@ const Homepage: React.FC = () => {
           };
         })
       );
-      setMovies((prevMovies) => [...prevMovies, ...moviesWithTrailers]);
+      setMovies((prevMovies) => [...prevMovies, ...moviesWithTrailers]); // Append new movies
     } catch (error) {
       console.error("Error fetching movies:", error);
+    } finally {
+      setLoading(false); //End loading
     }
   };
 
@@ -66,14 +71,14 @@ const Homepage: React.FC = () => {
 
   const handleFilterByGenre = (genreId: number | null) => {
     setSelectedGenre(genreId);
-    setQuery(null); // Clear search query when filtering by genre
+    setQuery(null); //Clears search query when filtering by genre
     setMovies([]);
     setPage(1);
   };
 
   const handleSearch = (query: string) => {
     setQuery(query);
-    setSelectedGenre(null); // Clear genre filter when searching by query
+    setSelectedGenre(null); //Clears genre filter when searching by query
     setMovies([]);
     setPage(1);
   };
@@ -104,7 +109,7 @@ const Homepage: React.FC = () => {
   return (
     <div>
       <Header onSearch={handleSearch} />
-      <div style={{ marginTop: "5rem" }}> {/* Add margin to avoid overlap with fixed header */}
+      <div style={{ marginTop: "5rem" }}>
         <div style={{ marginBottom: "1rem" }}>
           <label>Filter by Genre:</label>
           <select
@@ -122,38 +127,14 @@ const Homepage: React.FC = () => {
 
         <button
           onClick={() => (window.location.href = "/watchlist")}
-          style={{
-            marginBottom: "1rem",
-            padding: "0.5rem 1rem",
-            backgroundColor: "#e50914",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-          }}
+          className={styles.recommendationWatchlistButton}
         >
           Watchlist
         </button>
 
-        <div
-          style={{
-            padding: "2rem",
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: "1rem",
-          }}
-        >
+        <div className={styles.homePageMovieCard}>
           {filteredMovies.map((movie) => (
-            <div
-              key={movie.id}
-              style={{
-                backgroundColor: "#333",
-                color: "white",
-                borderRadius: "8px",
-                overflow: "hidden",
-                textAlign: "center",
-                padding: "1rem",
-              }}
-            >
+            <div key={movie.id} className={styles.movieCard}>
               <img
                 src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                 alt={movie.title}
@@ -170,29 +151,13 @@ const Homepage: React.FC = () => {
                 onClick={() =>
                   window.location.href = `/streaming?video_id=${movie.youtube_trailer_id}`
                 }
-                style={{
-                  backgroundColor: "#FFD700",
-                  color: "black",
-                  border: "none",
-                  padding: "0.5rem 1rem",
-                  fontSize: "1rem",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
+                className={styles.watchlistPreviewButton}
               >
                 Watch Preview
               </button>
               <button
                 onClick={() => handleAddToWatchlist(movie)}
-                style={{
-                  backgroundColor: "#e50914",
-                  color: "white",
-                  border: "none",
-                  padding: "0.5rem 1rem",
-                  fontSize: "1rem",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                }}
+                className={styles.recommendationWatchlistButton}
               >
                 Add to Watchlist
               </button>
@@ -200,19 +165,13 @@ const Homepage: React.FC = () => {
           ))}
         </div>
 
+        {/* Loading indication for "Load More" */}
         <button
           onClick={() => setPage((prevPage) => prevPage + 1)}
-          style={{
-            margin: "1rem auto",
-            display: "block",
-            padding: "0.5rem 1rem",
-            backgroundColor: "#333",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-          }}
+          className={styles.loadMoreButton}
+          disabled={loading}
         >
-          Load More
+          {loading ? "Loading..." : "Load More"}
         </button>
       </div>
     </div>

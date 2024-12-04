@@ -11,9 +11,9 @@
   align-items: center;
   justify-items: center;
   min-height: 100svh;
-  padding: 80px;
   gap: 64px;
   font-family: var(--font-geist-sans);
+  padding: 2rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -33,7 +33,11 @@
   align-items: center;
   gap: 32px;
   grid-row-start: 2;
+  text-align: center;
 }
+
+
+
 
 .contentWrapper {
   display: flex;
@@ -175,7 +179,11 @@ a.secondary {
 
 @media (prefers-color-scheme: dark) {
   .logo {
-    filter: invert();
+    max-width: 100px;
+    transition: 0.3s ease 0.4ms;
+  }
+  .logo:hover{
+    transform: scale(1.1);
   }
 }
 
@@ -202,7 +210,7 @@ a.secondary {
 }
 
 .addButton {
-  background-color: #e50914;
+  background-color: #b1000c;
   color: white;
   padding: 0.5rem 1rem;
   border: none;
@@ -221,23 +229,24 @@ a.secondary {
   gap: 1rem;
 }
 
-.page {
-  padding: 2rem;
-}
-
-.main {
-  text-align: center;
-}
 
 
-.watchlistbutton{
-    margin-bottom: 1rem;
+
+.watchlistPreviewButton{
+    margin-bottom: 0.4rem;
     padding: 0.5rem 1rem;
     background-color: #ffd900;
     color: rgb(0, 0, 0);
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+
+  .watchlistPreviewButton:hover {
+    transform: scale(1.1);
+    background-color: #ffde39;
   }
 .ExploreButton {
   padding: 0.8rem 1.5rem;
@@ -277,7 +286,7 @@ a.secondary {
   background-size: cover;
   background-position: center;
   transition: background-image 1s ease-in-out;
-  z-index: -1; /* Ensure the banner is behind other content */
+  z-index: -1; /* Ensures the banner is behind other content */
 }
 
 .banner::after{
@@ -390,4 +399,32 @@ a.secondary {
   color: white;
   font-size: 1.5rem;
   margin-left: 0.5rem;
+}
+
+.recommendationTitle {
+  font-size: 3.5rem;
+  align-items: left;
+}
+
+.recommendationWatchlistButton {
+  padding: 0.8rem 1.5rem;
+  background-color: #b00710;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.recommendationWatchlistButton:hover {
+  background-color: #e50914;
+  transform: scale(1.1);
+}
+
+.homePageMovieCard{
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
 }

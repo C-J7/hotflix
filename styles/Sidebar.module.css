@@ -1,0 +1,58 @@
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -250px; /* Initially hidden */
+    width: 250px;
+    height: 100%;
+    background-color: #111;
+    transition: transform 0.3s ease-in-out;
+    z-index: 1000; /* Make sure it sits above other content */
+  }
+
+.sidebar.open {
+    transform: translateX(250px); /* Slide in the sidebar */
+  }
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 2rem;
+  color: white;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.navList {
+  list-style-type: none;
+  padding: 0;
+  margin-top: 3rem;
+}
+
+.navList li {
+  margin-bottom: 2rem;
+}
+
+.navList li a {
+  color: #ffd700;
+  font-size: 1.25rem;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.navList li a .icon {
+  margin-right: 1rem;
+}
+
+.menuButton {
+  font-size: 1.5rem;
+  color: #fff;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.navList a:hover {
+  color: white;
+}

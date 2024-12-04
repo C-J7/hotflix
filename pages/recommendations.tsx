@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Carousel from "../components/Carousel";
+import Carousel from "../components/Carousel"; // Carousel Component
 import styles from "@/styles/Home.module.css";
+import Header from "@/components/Header";
 
 interface Movie {
   id: number;
@@ -15,9 +16,11 @@ const Recommendations: React.FC = () => {
   const [genreRecommendations, setGenreRecommendations] = useState<Movie[]>([]);
   const [bestToday, setBestToday] = useState<Movie[]>([]);
   const [allTimeBest, setAllTimeBest] = useState<Movie[]>([]);
+  const [actionMovies, setActionMovies] = useState<Movie[]>([]);
+  const [comedyMovies, setComedyMovies] = useState<Movie[]>([]);
 
-  // Helper to fetch movies with trailers
-  const fetchMoviesWithTrailers = async (movies: any[]) => {
+  // Helper Function: Fetch movies with trailers
+  const fetchMoviesWithTrailers = async (movies: Movie[]) => {
     return await Promise.all(
       movies.map(async (movie) => {
         const trailerResponse = await axios.get(
@@ -34,7 +37,7 @@ const Recommendations: React.FC = () => {
     );
   };
 
-  // Fetch All-Time Best
+  // Fetch all movie data categories
   const fetchAllTimeBest = async () => {
     const response = await axios.get(
       `https://api.themoviedb.org/3/movie/top_rated?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&page=1`
@@ -42,7 +45,6 @@ const Recommendations: React.FC = () => {
     setAllTimeBest(await fetchMoviesWithTrailers(response.data.results));
   };
 
-  // Fetch Best Today
   const fetchBestToday = async () => {
     const response = await axios.get(
       `https://api.themoviedb.org/3/trending/movie/day?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`
@@ -50,7 +52,6 @@ const Recommendations: React.FC = () => {
     setBestToday(await fetchMoviesWithTrailers(response.data.results));
   };
 
-  // Fetch Genre-Based Recommendations (e.g., Animation - genre_id 16)
   const fetchGenreRecommendations = async () => {
     const response = await axios.get(
       `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&with_genres=16`
@@ -58,7 +59,6 @@ const Recommendations: React.FC = () => {
     setGenreRecommendations(await fetchMoviesWithTrailers(response.data.results));
   };
 
-  // Fetch Mood Recommendations (Predefined Static Happy Moods using Top Rated)
   const fetchMoodRecommendations = async () => {
     const response = await axios.get(
       `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&page=1`
@@ -66,34 +66,54 @@ const Recommendations: React.FC = () => {
     setMoodRecommendations(await fetchMoviesWithTrailers(response.data.results.slice(0, 10)));
   };
 
+  const fetchActionMovies = async () => {
+    const response = await axios.get(
+      `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&with_genres=28`
+    );
+    setActionMovies(await fetchMoviesWithTrailers(response.data.results));
+  };
+
+  const fetchComedyMovies = async () => {
+    const response = await axios.get(
+      `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&with_genres=35`
+    );
+    setComedyMovies(await fetchMoviesWithTrailers(response.data.results));
+  };
+
   useEffect(() => {
     fetchAllTimeBest();
     fetchBestToday();
     fetchGenreRecommendations();
     fetchMoodRecommendations();
+    fetchActionMovies();
+    fetchComedyMovies();
   }, []);
 
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <h1 className={styles.title}>Movie Recommendations</h1>
-        <button
-          onClick={() => (window.location.href = "/watchlist")}
-          className={styles.watchlistButton}
-        >
-          Go to Watchlist
-        </button>
-        <Carousel title="Happy" movies={moodRecommendations} />
-        <Carousel title="Animation " movies={genreRecommendations} />
-        <Carousel title="Best Today" movies={bestToday} />
-        <Carousel title="All-Time Best" movies={allTimeBest} />
-      </main>
+    <div>
+      <Header onSearch={() => {}} />
+      <div className={styles.page}>
+        <main className={styles.main}>
+          <h1 className={styles.recommendationTitle}>Movie Recommendations</h1>
+          <button
+            onClick={() => (window.location.href = "/watchlist")}
+            className={styles.recommendationWatchlistButton}
+          >
+            Go to Watchlist
+          </button>
+
+          {/* Each Carousel limited to 3 movies at a time */}
+          <Carousel title="Happy" movies={moodRecommendations.slice(0, 10)} />
+          <Carousel title="Animation" movies={genreRecommendations.slice(0, 10)} />
+          <Carousel title="Best Today" movies={bestToday.slice(0, 10)} />
+          <Carousel title="All-Time Best" movies={allTimeBest.slice(0, 10)} />
+          <Carousel title="Action" movies={actionMovies.slice(0, 10)} />
+          <Carousel title="Comedy" movies={comedyMovies.slice(0, 10)} />
+          </main>
+      </div>
     </div>
   );
 };
 
 export default Recommendations;
-
-
-
 
