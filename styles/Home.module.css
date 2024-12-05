@@ -259,7 +259,7 @@ a.secondary {
 }
 
 .ExploreButton:hover {
-  background-color: #e5c009;
+  background-color: #c90b0b;
   transform: scale(1.1);
 }
 
@@ -422,9 +422,54 @@ a.secondary {
   transform: scale(1.1);
 }
 
+.loadMoreButton {
+  padding: 0.5rem 1rem;
+  size: 1rem;
+  background-color: #b00710;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.loadMoreButton:hover {
+  background-color: #e50914;
+  transform: scale(1.1);
+}
+
 .homePageMovieCard{
   padding: 2rem;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1rem;
+}
+
+.profileContainer {
+  position: relative;
+  cursor: pointer;
+}
+
+.profileDropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #111;
+  border: 1px solid #555;
+  padding: 1rem;
+  color: #ffd700;
+  border-radius: 5px;
+}
+
+.profileDropdown p {
+  margin: 0.5rem 0;
+}
+
+.profileDropdown button {
+  background-color: #e50914;
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
 }
