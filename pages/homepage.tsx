@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Header from "@/components/Header";
+import MovieCard from "@/components/MovieCard";
 import styles from "@/styles/Home.module.css";
 
 interface Movie {
@@ -23,14 +24,16 @@ const Homepage: React.FC = () => {
   const [selectedGenre, setSelectedGenre] = useState<number | null>(null);
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false); // Track current loading state
+  const [loading, setLoading] = useState(false);
 
+  // Fetch movies with YouTube trailers
   const fetchMovies = async () => {
     try {
-      setLoading(true); //Starts loading
+      setLoading(true);
       const response = await axios.get(
         `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&page=${page}`
       );
+
       const moviesWithTrailers = await Promise.all(
         response.data.results.map(async (movie: Movie) => {
           const trailerResponse = await axios.get(
@@ -45,14 +48,15 @@ const Homepage: React.FC = () => {
           };
         })
       );
-      setMovies((prevMovies) => [...prevMovies, ...moviesWithTrailers]); // Append new movies
+      setMovies((prevMovies) => [...prevMovies, ...moviesWithTrailers]);
     } catch (error) {
       console.error("Error fetching movies:", error);
     } finally {
-      setLoading(false); //End loading
+      setLoading(false);
     }
   };
 
+  // Fetch movie genres
   const fetchGenres = async () => {
     try {
       const response = await axios.get(
@@ -64,6 +68,14 @@ const Homepage: React.FC = () => {
     }
   };
 
+  // Process movies for MovieCard compatibility
+  const getProcessedMovies = (movies: Movie[]) =>
+    movies.map((movie) => ({
+      ...movie,
+      genres: movie.genre_ids.map((id) => genres.find((g) => g.id === id)?.name || "Unknown"),
+      release_year: movie.release_date.split("-")[0],
+    }));
+
   useEffect(() => {
     fetchMovies();
     fetchGenres();
@@ -71,14 +83,14 @@ const Homepage: React.FC = () => {
 
   const handleFilterByGenre = (genreId: number | null) => {
     setSelectedGenre(genreId);
-    setQuery(null); //Clears search query when filtering by genre
+    setQuery(null);
     setMovies([]);
     setPage(1);
   };
 
   const handleSearch = (query: string) => {
     setQuery(query);
-    setSelectedGenre(null); //Clears genre filter when searching by query
+    setSelectedGenre(null);
     setMovies([]);
     setPage(1);
   };
@@ -93,23 +105,12 @@ const Homepage: React.FC = () => {
     return true;
   });
 
-  const handleAddToWatchlist = (movie: Movie) => {
-    const savedWatchlist = localStorage.getItem("watchlist");
-    let watchlist = savedWatchlist ? JSON.parse(savedWatchlist) : [];
-
-    if (!watchlist.some((item: Movie) => item.id === movie.id)) {
-      watchlist.push(movie);
-      localStorage.setItem("watchlist", JSON.stringify(watchlist));
-      alert(`${movie.title} added to watchlist!`);
-    } else {
-      alert(`${movie.title} is already in your watchlist.`);
-    }
-  };
+  const processedMovies = getProcessedMovies(filteredMovies);
 
   return (
     <div>
       <Header onSearch={handleSearch} />
-      <div >
+      <div>
         <div style={{ marginBottom: "1rem" }}>
           <label>Filter by Genre:</label>
           <select
@@ -133,39 +134,11 @@ const Homepage: React.FC = () => {
         </button>
 
         <div className={styles.homePageMovieCard}>
-          {filteredMovies.map((movie) => (
-            <div key={movie.id} className={styles.movieCard}>
-              <img
-                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                alt={movie.title}
-                style={{ width: "100%", height: "300px", objectFit: "cover" }}
-              />
-              <h3 style={{ margin: "1rem 0" }}>{movie.title}</h3>
-              <p>
-                Genres:{" "}
-                {movie.genre_ids
-                  .map((id) => genres.find((genre) => genre.id === id)?.name)
-                  .join(", ")}
-              </p>
-              <button
-                onClick={() =>
-                  window.location.href = `/streaming?video_id=${movie.youtube_trailer_id}`
-                }
-                className={styles.watchlistPreviewButton}
-              >
-                Watch Preview
-              </button>
-              <button
-                onClick={() => handleAddToWatchlist(movie)}
-                className={styles.recommendationWatchlistButton}
-              >
-                Add to Watchlist
-              </button>
-            </div>
+          {processedMovies.map((movie) => (
+            <MovieCard key={movie.id} movie={movie} />
           ))}
         </div>
 
-        {/* Loading indication for "Load More" */}
         <button
           onClick={() => setPage((prevPage) => prevPage + 1)}
           className={styles.loadMoreButton}

@@ -13,7 +13,7 @@ export default function Home() {
     if (response.credential) {
       try {
         // Send the token to the backend to verify and receive the JWT
-        const res = await fetch("/api/auth/google-login", {
+        const res = await fetch("/backend/auth/google-login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ token: response.credential }),

@@ -1,52 +1,114 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import Header from "@/components/Header";
 import Carousel from "@/components/Carousel";
-import { IconClipboardList } from '@tabler/icons-react';
-import styles from '@/styles/Home.module.css';
+import { IconClipboardList } from "@tabler/icons-react";
+import styles from "@/styles/Home.module.css";
 
 interface Movie {
   id: number;
   title: string;
   poster_path: string;
+  release_date: string;
+  genre_ids: number[];
   youtube_trailer_id: string;
 }
 
-const Recommendations: React.FC = () => {
-  const [moodRecommendations, setMoodRecommendations] = useState<Movie[]>([]);
-  const [genreRecommendations, setGenreRecommendations] = useState<Movie[]>([]);
-  const [bestToday, setBestToday] = useState<Movie[]>([]);
-  const [allTimeBest, setAllTimeBest] = useState<Movie[]>([]);
-  const [actionMovies, setActionMovies] = useState<Movie[]>([]);
-  const [comedyMovies, setComedyMovies] = useState<Movie[]>([]);
+interface EnhancedMovie extends Movie {
+  genres: string[];
+  release_year: string;
+}
 
-  const fetchMoviesWithTrailers = async (movies: Movie[]) => {
+interface Genre {
+  id: number;
+  name: string;
+}
+
+const Recommendations: React.FC = () => {
+  const [moodRecommendations, setMoodRecommendations] = useState<EnhancedMovie[]>([]);
+  const [genreRecommendations, setGenreRecommendations] = useState<EnhancedMovie[]>([]);
+  const [bestToday, setBestToday] = useState<EnhancedMovie[]>([]);
+  const [allTimeBest, setAllTimeBest] = useState<EnhancedMovie[]>([]);
+  const [actionMovies, setActionMovies] = useState<EnhancedMovie[]>([]);
+  const [comedyMovies, setComedyMovies] = useState<EnhancedMovie[]>([]);
+  const [genreMapping, setGenreMapping] = useState<Record<number, string>>({});
+
+  // Fetches genres and create a mapping
+  const fetchGenres = async () => {
+    try {
+      const response = await axios.get(
+        `https://api.themoviedb.org/3/genre/movie/list?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`
+      );
+      const genres = response.data.genres;
+      const mapping = genres.reduce((acc: Record<number, string>, genre: Genre) => {
+        acc[genre.id] = genre.name;
+        return acc;
+      }, {});
+      setGenreMapping(mapping);
+    } catch (error) {
+      console.error("Error fetching genres:", error);
+    }
+  };
+
+  // Enhance movies with genres and release year
+  const enhanceMovies = (movies: Movie[]): EnhancedMovie[] => {
+    return movies.map((movie) => ({
+      ...movie,
+      genres: movie.genre_ids.map((id) => genreMapping[id] || "Unknown"),
+      release_year: movie.release_date?.split("-")[0] || "N/A",
+    }));
+  };
+
+  const fetchMoviesWithTrailers = async (movies: Movie[]): Promise<EnhancedMovie[]> => {
     return await Promise.all(
       movies.map(async (movie) => {
-        const trailerResponse = await axios.get(
-          `https://api.themoviedb.org/3/movie/${movie.id}/videos?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`
-        );
-        const trailer = trailerResponse.data.results.find(
-          (video: any) => video.type === "Trailer" && video.site === "YouTube"
-        );
-        return {
-          ...movie,
-          youtube_trailer_id: trailer ? trailer.key : "",
-        };
+        try {
+          const trailerResponse = await axios.get(
+            `https://api.themoviedb.org/3/movie/${movie.id}/videos?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`
+          );
+          const trailer = trailerResponse.data.results.find(
+            (video: any) => video.type === "Trailer" && video.site === "YouTube"
+          );
+          return {
+            ...movie,
+            youtube_trailer_id: trailer ? trailer.key : "",
+            genres: movie.genre_ids.map((id) => genreMapping[id] || "Unknown"),
+            release_year: movie.release_date?.split("-")[0] || "N/A",
+          };
+        } catch (error) {
+          console.error(`Error fetching trailer for movie ID ${movie.id}:`, error);
+          return {
+            ...movie,
+            youtube_trailer_id: "",
+            genres: movie.genre_ids.map((id) => genreMapping[id] || "Unknown"),
+            release_year: movie.release_date?.split("-")[0] || "N/A",
+          };
+        }
       })
     );
   };
 
-  // Fetch movie categories from TMDB API
   const fetchMovies = async () => {
     try {
       const [allTimeRes, trendingRes, genreRes, moodRes, actionRes, comedyRes] = await Promise.all([
-        axios.get(`https://api.themoviedb.org/3/movie/top_rated?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&page=1`),
-        axios.get(`https://api.themoviedb.org/3/trending/movie/day?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`),
-        axios.get(`https://api.themoviedb.org/3/discover/movie?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&with_genres=16`),
-        axios.get(`https://api.themoviedb.org/3/movie/popular?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&page=1`),
-        axios.get(`https://api.themoviedb.org/3/discover/movie?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&with_genres=28`),
-        axios.get(`https://api.themoviedb.org/3/discover/movie?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&with_genres=35`)
+        axios.get(
+          `https://api.themoviedb.org/3/movie/top_rated?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&page=1`
+        ),
+        axios.get(
+          `https://api.themoviedb.org/3/trending/movie/day?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`
+        ),
+        axios.get(
+          `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&with_genres=16`
+        ),
+        axios.get(
+          `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&page=1`
+        ),
+        axios.get(
+          `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&with_genres=28`
+        ),
+        axios.get(
+          `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&with_genres=35`
+        ),
       ]);
 
       setAllTimeBest(await fetchMoviesWithTrailers(allTimeRes.data.results));
@@ -61,8 +123,14 @@ const Recommendations: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchMovies();
+    fetchGenres(); // Fetches genres first to create mapping
   }, []);
+
+  useEffect(() => {
+    if (Object.keys(genreMapping).length > 0) {
+      fetchMovies(); // Fetches movies after genre mapping is ready
+    }
+  }, [genreMapping]);
 
   return (
     <div className={`${styles.page} bg-black text-white min-h-screen`}>
@@ -70,7 +138,7 @@ const Recommendations: React.FC = () => {
       <main className={`${styles.main} container mx-auto px-4 py-8`}>
         <div className="flex justify-between items-center mb-8 w-full">
           <h1 className={`${styles.recommendationTitle} text-white`}>Recommendations</h1>
-          <button 
+          <button
             onClick={() => window.location.href = "/watchlist"}
             className={`${styles.recommendationWatchlistButton} flex items-center space-x-2`}
           >

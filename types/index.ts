@@ -1,4 +1,4 @@
-// types/index.ts
+
 export interface Movie {
     youtube_trailer_id: string;
     id: number;
