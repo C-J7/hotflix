@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import Carousel from "../components/Carousel"; // Carousel Component
-import styles from "@/styles/Home.module.css";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import Header from "@/components/Header";
+import Carousel from "@/components/Carousel";
+import { IconClipboardList } from '@tabler/icons-react';
+import styles from '@/styles/Home.module.css';
 
 interface Movie {
   id: number;
@@ -19,7 +20,6 @@ const Recommendations: React.FC = () => {
   const [actionMovies, setActionMovies] = useState<Movie[]>([]);
   const [comedyMovies, setComedyMovies] = useState<Movie[]>([]);
 
-  // Helper Function: Fetch movies with trailers
   const fetchMoviesWithTrailers = async (movies: Movie[]) => {
     return await Promise.all(
       movies.map(async (movie) => {
@@ -37,83 +37,59 @@ const Recommendations: React.FC = () => {
     );
   };
 
-  // Fetch all movie data categories
-  const fetchAllTimeBest = async () => {
-    const response = await axios.get(
-      `https://api.themoviedb.org/3/movie/top_rated?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&page=1`
-    );
-    setAllTimeBest(await fetchMoviesWithTrailers(response.data.results));
-  };
+  // Fetch movie categories from TMDB API
+  const fetchMovies = async () => {
+    try {
+      const [allTimeRes, trendingRes, genreRes, moodRes, actionRes, comedyRes] = await Promise.all([
+        axios.get(`https://api.themoviedb.org/3/movie/top_rated?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&page=1`),
+        axios.get(`https://api.themoviedb.org/3/trending/movie/day?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`),
+        axios.get(`https://api.themoviedb.org/3/discover/movie?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&with_genres=16`),
+        axios.get(`https://api.themoviedb.org/3/movie/popular?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&page=1`),
+        axios.get(`https://api.themoviedb.org/3/discover/movie?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&with_genres=28`),
+        axios.get(`https://api.themoviedb.org/3/discover/movie?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&with_genres=35`)
+      ]);
 
-  const fetchBestToday = async () => {
-    const response = await axios.get(
-      `https://api.themoviedb.org/3/trending/movie/day?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`
-    );
-    setBestToday(await fetchMoviesWithTrailers(response.data.results));
-  };
-
-  const fetchGenreRecommendations = async () => {
-    const response = await axios.get(
-      `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&with_genres=16`
-    );
-    setGenreRecommendations(await fetchMoviesWithTrailers(response.data.results));
-  };
-
-  const fetchMoodRecommendations = async () => {
-    const response = await axios.get(
-      `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&page=1`
-    );
-    setMoodRecommendations(await fetchMoviesWithTrailers(response.data.results.slice(0, 10)));
-  };
-
-  const fetchActionMovies = async () => {
-    const response = await axios.get(
-      `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&with_genres=28`
-    );
-    setActionMovies(await fetchMoviesWithTrailers(response.data.results));
-  };
-
-  const fetchComedyMovies = async () => {
-    const response = await axios.get(
-      `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&with_genres=35`
-    );
-    setComedyMovies(await fetchMoviesWithTrailers(response.data.results));
+      setAllTimeBest(await fetchMoviesWithTrailers(allTimeRes.data.results));
+      setBestToday(await fetchMoviesWithTrailers(trendingRes.data.results));
+      setGenreRecommendations(await fetchMoviesWithTrailers(genreRes.data.results));
+      setMoodRecommendations(await fetchMoviesWithTrailers(moodRes.data.results.slice(0, 10)));
+      setActionMovies(await fetchMoviesWithTrailers(actionRes.data.results));
+      setComedyMovies(await fetchMoviesWithTrailers(comedyRes.data.results));
+    } catch (error) {
+      console.error("Error fetching movies:", error);
+    }
   };
 
   useEffect(() => {
-    fetchAllTimeBest();
-    fetchBestToday();
-    fetchGenreRecommendations();
-    fetchMoodRecommendations();
-    fetchActionMovies();
-    fetchComedyMovies();
+    fetchMovies();
   }, []);
 
   return (
-    <div>
+    <div className={`${styles.page} bg-black text-white min-h-screen`}>
       <Header onSearch={() => {}} />
-      <div className={styles.page}>
-        <main className={styles.main}>
-          <h1 className={styles.recommendationTitle}>Movie Recommendations</h1>
-          <button
-            onClick={() => (window.location.href = "/watchlist")}
-            className={styles.recommendationWatchlistButton}
+      <main className={`${styles.main} container mx-auto px-4 py-8`}>
+        <div className="flex justify-between items-center mb-8 w-full">
+          <h1 className={`${styles.recommendationTitle} text-white`}>Recommendations</h1>
+          <button 
+            onClick={() => window.location.href = "/watchlist"}
+            className={`${styles.recommendationWatchlistButton} flex items-center space-x-2`}
           >
-            Go to Watchlist
+            <IconClipboardList size={24} />
+            <span>My Watchlist</span>
           </button>
+        </div>
 
-          {/* Each Carousel limited to 3 movies at a time */}
-          <Carousel title="Happy" movies={moodRecommendations.slice(0, 10)} />
-          <Carousel title="Animation" movies={genreRecommendations.slice(0, 10)} />
-          <Carousel title="Best Today" movies={bestToday.slice(0, 10)} />
-          <Carousel title="All-Time Best" movies={allTimeBest.slice(0, 10)} />
-          <Carousel title="Action" movies={actionMovies.slice(0, 10)} />
-          <Carousel title="Comedy" movies={comedyMovies.slice(0, 10)} />
-          </main>
-      </div>
+        <div className="space-y-8">
+          <Carousel title="Trending Now" movies={bestToday} />
+          <Carousel title="Top Picks" movies={moodRecommendations} />
+          <Carousel title="Animation Favorites" movies={genreRecommendations} />
+          <Carousel title="All-Time Classics" movies={allTimeBest} />
+          <Carousel title="Action Packed" movies={actionMovies} />
+          <Carousel title="Comedy Corner" movies={comedyMovies} />
+        </div>
+      </main>
     </div>
   );
 };
 
 export default Recommendations;
-

@@ -1,6 +1,7 @@
-import React from "react";
-import { IoChevronBackCircle, IoChevronForwardCircle } from "react-icons/io5"; 
-import styles from "@/styles/Carousel.module.css";
+import React, { useRef } from 'react';
+import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
+import MovieCard from './MovieCard';
+import styles from '@/styles/Carousel.module.css';
 
 interface CarouselProps {
   title: string;
@@ -13,54 +14,36 @@ interface CarouselProps {
 }
 
 const Carousel: React.FC<CarouselProps> = ({ title, movies }) => {
-  const scrollLeft = () => {
-    const container = document.getElementById(title);
-    container?.scrollBy({ left: -300, behavior: "smooth" });
-  };
+  const carouselRef = useRef<HTMLDivElement>(null);
 
-  const scrollRight = () => {
-    const container = document.getElementById(title);
-    container?.scrollBy({ left: 300, behavior: "smooth" });
+  const scroll = (direction: 'left' | 'right') => {
+    if (carouselRef.current) {
+      const scrollAmount = carouselRef.current.clientWidth;
+      const offset = direction === 'left' ? -scrollAmount : scrollAmount;
+      carouselRef.current.scrollBy({ left: offset, behavior: 'smooth' });
+    }
   };
 
   return (
     <div className={styles.carouselContainer}>
-      <h2 className={styles.carouselTitle}>{title}</h2>
-
-      <div className={styles.carouselWrapper}>
-        {/* Left Scroll Button */}
-        <IoChevronBackCircle
-          className={styles.navButtonLeft}
-          onClick={scrollLeft}
-        />
-
-        {/* Movie Scroll Area */}
-        <div id={title} className={styles.scrollContainer}>
-          {movies.map((movie) => (
-            <div key={movie.id} className={styles.carouselItem}>
-              <img
-                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                alt={movie.title}
-                className={styles.moviePoster}
-              />
-              <h3 className={styles.movieTitle}>{movie.title}</h3>
-              <button
-                className={styles.previewButton}
-                onClick={() =>
-                  (window.location.href = `/streaming?video_id=${movie.youtube_trailer_id}`)
-                }
-              >
-                Watch Preview
-              </button>
-            </div>
-          ))}
+      <div className={styles.header}>
+        <h2 className={styles.carouselTitle}>{title}</h2>
+        <div className={styles.navButtons}>
+          <button onClick={() => scroll('left')} className={styles.navButton}>
+            <IconChevronLeft size={24} />
+          </button>
+          <button onClick={() => scroll('right')} className={styles.navButton}>
+            <IconChevronRight size={24} />
+          </button>
         </div>
+      </div>
 
-        {/* Right Scroll Button */}
-        <IoChevronForwardCircle
-          className={styles.navButtonRight}
-          onClick={scrollRight}
-        />
+      <div ref={carouselRef} className={styles.carouselWrapper}>
+        {movies.map((movie) => (
+          <div key={movie.id} className={styles.carouselItem}>
+            <MovieCard movie={movie} />
+          </div>
+        ))}
       </div>
     </div>
   );

@@ -473,3 +473,10 @@ a.secondary {
   padding: 0.5rem;
   cursor: pointer;
 }
+.userIcon{
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+.userIcon:hover {
+  color: rgb(228, 61, 61);
+  transform: scale(1.3);
+}

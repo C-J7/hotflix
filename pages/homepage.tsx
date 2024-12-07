@@ -109,7 +109,7 @@ const Homepage: React.FC = () => {
   return (
     <div>
       <Header onSearch={handleSearch} />
-      <div style={{ marginTop: "5rem" }}>
+      <div >
         <div style={{ marginBottom: "1rem" }}>
           <label>Filter by Genre:</label>
           <select

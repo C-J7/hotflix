@@ -1,60 +1,64 @@
-import React, { useState } from 'react'; 
-import { FaHome, FaFilm, FaBookmark, FaInfoCircle, FaTimes } from 'react-icons/fa';
-import styles from '@/styles/Sidebar.module.css'; 
+import React from 'react';
+import Link from 'next/link';
+import { 
+  IconHome, 
+  IconMovie, 
+  IconBookmark, 
+  IconInfoCircle, 
+  IconX 
+} from '@tabler/icons-react';
+import styles from '@/styles/Sidebar.module.css';
 
 interface SidebarProps {
+  isOpen: boolean;
   onClose: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ onClose }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-  };
-
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   return (
-    <>
-      {/* Menu Button with Toggle */}
-      <button className={styles.menuButton} onClick={toggleSidebar}>
-        {isOpen ? <FaTimes /> : <FaHome />} {/* Toggle between Home and Close icon */}
+    <div className={`${styles.sidebar} ${isOpen ? styles.open : ''}`}>
+      <button 
+        className={styles.closeButton} 
+        onClick={onClose}
+        aria-label="Close Sidebar"
+      >
+        <IconX stroke={1.5} />
       </button>
-
-      {/* Sidebar - Add Close button inside the sidebar */}
-      <div className={`${styles.sidebar} ${isOpen ? styles.open : ''}`}>
-        <button className={styles.closeButton} onClick={onClose}>
-          <FaTimes /> {/* Close icon inside sidebar */}
-        </button>
-        <nav>
-          <ul className={styles.navList}>
-            <li>
-              <a href="/homepage">
-                <FaHome className={styles.icon} />
-                Home
-              </a>
+      
+      <nav className={styles.sidebarNav}>
+        <ul className={styles.navList}>
+          {[
+            { 
+              href: "/homepage", 
+              icon: <IconHome stroke={1.5} />, 
+              label: "Home" 
+            },
+            { 
+              href: "/recommendations", 
+              icon: <IconMovie stroke={1.5} />, 
+              label: "Recommendations" 
+            },
+            { 
+              href: "/watchlist", 
+              icon: <IconBookmark stroke={1.5} />, 
+              label: "Watchlist" 
+            },
+            { 
+              href: "/aboutPage", 
+              icon: <IconInfoCircle stroke={1.5} />, 
+              label: "About" 
+            }
+          ].map(({ href, icon, label }) => (
+            <li key={href}>
+              <Link href={href} className={styles.navLink}>
+                {icon}
+                <span>{label}</span>
+              </Link>
             </li>
-            <li>
-              <a href="/recommendations">
-                <FaFilm className={styles.icon} />
-                Recommendations
-              </a>
-            </li>
-            <li>
-              <a href="/watchlist">
-                <FaBookmark className={styles.icon} />
-                Watchlist
-              </a>
-            </li>
-            <li>
-              <a href="/aboutPage">
-                <FaInfoCircle className={styles.icon} />
-                About
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </div>
-    </>
+          ))}
+        </ul>
+      </nav>
+    </div>
   );
 };
 
