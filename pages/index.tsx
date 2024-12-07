@@ -72,6 +72,9 @@ export default function Home() {
             </div>
           </main>
         </div>
+        <footer className={styles.footer}>
+          <p>Built by <i>C-J7</i></p>
+        </footer>
       </>
     </GoogleAuthProvider>
   );

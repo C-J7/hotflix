@@ -109,16 +109,39 @@ a.secondary {
 }
 
 .footer {
-  grid-row-start: 3;
-  display: flex;
-  gap: 24px;
+  background: linear-gradient(135deg, #2e291a37, #7129293b);
+  padding: 0.5rem 1rem;
+  text-align: center;
+  color: #e0e0e0;
+  box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
 }
 
-.footer a {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  
 }
+
+.footer-content {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footer-text {
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    font-family: "Times New Roman", Times, serif;
+  }
 
 .footer img {
   flex-shrink: 0;
