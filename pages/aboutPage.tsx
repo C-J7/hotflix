@@ -14,7 +14,7 @@ import styles from '@/styles/AboutPage.module.css';
 
 const AboutPage: React.FC = () => {
   return ( 
-    <div>
+    <div> 
     <Header onSearch={() => {}} />
     <div className={styles['about-container']}>
       <div className={styles['hero-section']}>
