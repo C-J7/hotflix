@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Header from "@/components/Header";
 import MovieCard from "@/components/MovieCard";
 import styles from "@/styles/Home.module.css";
@@ -28,7 +28,7 @@ const Watchlist: React.FC = () => {
   const [isClient, setIsClient] = useState(false);
 
   // Fetch genres from TMDB API
-  const fetchGenres = async () => {
+  const fetchGenres = useCallback(async () => {
     try {
       const response = await fetch(
         `https://api.themoviedb.org/3/genre/movie/list?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`
@@ -38,17 +38,20 @@ const Watchlist: React.FC = () => {
     } catch (error) {
       console.error("Error fetching genres:", error);
     }
-  };
+  }, []);
 
-  
-  const enhanceWatchlist = (movies: Movie[]): ProcessedMovie[] =>
-    movies.map((movie) => ({
-      ...movie,
-      genres: movie.genre_ids
-        ? movie.genre_ids.map((id) => genres.find((g) => g.id === id)?.name || "Unknown")
-        : [],
-      release_year: movie.release_date ? movie.release_date.split("-")[0] : "N/A",
-    }));
+  // Enhance watchlist movies with genres and release year
+  const enhanceWatchlist = useCallback(
+    (movies: Movie[]): ProcessedMovie[] =>
+      movies.map((movie) => ({
+        ...movie,
+        genres: movie.genre_ids
+          ? movie.genre_ids.map((id) => genres.find((g) => g.id === id)?.name || "Unknown")
+          : [],
+        release_year: movie.release_date ? movie.release_date.split("-")[0] : "N/A",
+      })),
+    [genres]
+  );
 
   useEffect(() => {
     setIsClient(true);
@@ -58,9 +61,11 @@ const Watchlist: React.FC = () => {
       const watchlistData: Movie[] = JSON.parse(savedWatchlist);
       setWatchlist(enhanceWatchlist(watchlistData));
     }
+  }, [enhanceWatchlist]);
 
+  useEffect(() => {
     fetchGenres();
-  }, [genres]);
+  }, [fetchGenres]);
 
   if (!isClient) {
     return <div>Loading...</div>;

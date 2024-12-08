@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import Header from "@/components/Header";
 import Carousel from "@/components/Carousel";
@@ -33,8 +33,8 @@ const Recommendations: React.FC = () => {
   const [comedyMovies, setComedyMovies] = useState<EnhancedMovie[]>([]);
   const [genreMapping, setGenreMapping] = useState<Record<number, string>>({});
 
-  // Fetches genres and create a mapping
-  const fetchGenres = async () => {
+  // Fetch genres and create a mapping
+  const fetchGenres = useCallback(async () => {
     try {
       const response = await axios.get(
         `https://api.themoviedb.org/3/genre/movie/list?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`
@@ -48,47 +48,43 @@ const Recommendations: React.FC = () => {
     } catch (error) {
       console.error("Error fetching genres:", error);
     }
-  };
+  }, []);
 
-  // Enhance movies with genres and release year
-  const enhanceMovies = (movies: Movie[]): EnhancedMovie[] => {
-    return movies.map((movie) => ({
-      ...movie,
-      genres: movie.genre_ids.map((id) => genreMapping[id] || "Unknown"),
-      release_year: movie.release_date?.split("-")[0] || "N/A",
-    }));
-  };
+  // Fetch movies with trailers and enhance them
+  const fetchMoviesWithTrailers = useCallback(
+    async (movies: Movie[]): Promise<EnhancedMovie[]> => {
+      return await Promise.all(
+        movies.map(async (movie) => {
+          try {
+            const trailerResponse = await axios.get(
+              `https://api.themoviedb.org/3/movie/${movie.id}/videos?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`
+            );
+            const trailer = trailerResponse.data.results.find(
+              (video: { type: string; site: string }) => video.type === "Trailer" && video.site === "YouTube"
+            );
+            return {
+              ...movie,
+              youtube_trailer_id: trailer ? trailer.key : "",
+              genres: movie.genre_ids.map((id) => genreMapping[id] || "Unknown"),
+              release_year: movie.release_date?.split("-")[0] || "N/A",
+            };
+          } catch (error) {
+            console.error(`Error fetching trailer for movie ID ${movie.id}:`, error);
+            return {
+              ...movie,
+              youtube_trailer_id: "",
+              genres: movie.genre_ids.map((id) => genreMapping[id] || "Unknown"),
+              release_year: movie.release_date?.split("-")[0] || "N/A",
+            };
+          }
+        })
+      );
+    },
+    [genreMapping]
+  );
 
-  const fetchMoviesWithTrailers = async (movies: Movie[]): Promise<EnhancedMovie[]> => {
-    return await Promise.all(
-      movies.map(async (movie) => {
-        try {
-          const trailerResponse = await axios.get(
-            `https://api.themoviedb.org/3/movie/${movie.id}/videos?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`
-          );
-          const trailer = trailerResponse.data.results.find(
-            (video: any) => video.type === "Trailer" && video.site === "YouTube"
-          );
-          return {
-            ...movie,
-            youtube_trailer_id: trailer ? trailer.key : "",
-            genres: movie.genre_ids.map((id) => genreMapping[id] || "Unknown"),
-            release_year: movie.release_date?.split("-")[0] || "N/A",
-          };
-        } catch (error) {
-          console.error(`Error fetching trailer for movie ID ${movie.id}:`, error);
-          return {
-            ...movie,
-            youtube_trailer_id: "",
-            genres: movie.genre_ids.map((id) => genreMapping[id] || "Unknown"),
-            release_year: movie.release_date?.split("-")[0] || "N/A",
-          };
-        }
-      })
-    );
-  };
-
-  const fetchMovies = async () => {
+  // Fetch movie categories
+  const fetchMovies = useCallback(async () => {
     try {
       const [allTimeRes, trendingRes, genreRes, moodRes, actionRes, comedyRes] = await Promise.all([
         axios.get(
@@ -120,17 +116,17 @@ const Recommendations: React.FC = () => {
     } catch (error) {
       console.error("Error fetching movies:", error);
     }
-  };
+  }, [fetchMoviesWithTrailers]);
 
   useEffect(() => {
-    fetchGenres(); // Fetches genres first to create mapping
-  }, []);
+    fetchGenres(); // Fetch genres first to create mapping
+  }, [fetchGenres]);
 
   useEffect(() => {
     if (Object.keys(genreMapping).length > 0) {
-      fetchMovies(); // Fetches movies after genre mapping is ready
+      fetchMovies(); // Fetch movies after genre mapping is ready
     }
-  }, [genreMapping]);
+  }, [genreMapping, fetchMovies]);
 
   return (
     <div className={`${styles.page} bg-black text-white min-h-screen`}>
@@ -139,7 +135,7 @@ const Recommendations: React.FC = () => {
         <div className="flex justify-between items-center mb-8 w-full">
           <h1 className={`${styles.recommendationTitle} text-white`}>Recommendations</h1>
           <button
-            onClick={() => window.location.href = "/watchlist"}
+            onClick={() => (window.location.href = "/watchlist")}
             className={`${styles.recommendationWatchlistButton} flex items-center space-x-2`}
           >
             <IconClipboardList size={24} />

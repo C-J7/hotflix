@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { IconPlayerPlayFilled, IconPlus } from "@tabler/icons-react";
 import { useRouter } from "next/router";
+import Image from "next/image"; // Use Next.js Image component
 import styles from "@/styles/MovieCard.module.css";
 
 interface MovieCardProps {
@@ -27,7 +28,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
   const handleAddToWatchlist = () => {
     try {
       const savedWatchlist = localStorage.getItem("watchlist");
-      let watchlist = savedWatchlist ? JSON.parse(savedWatchlist) : [];
+      const watchlist = savedWatchlist ? JSON.parse(savedWatchlist) : []; // Changed to `const`
 
       if (!watchlist.some((item: typeof movie) => item.id === movie.id)) {
         watchlist.push(movie);
@@ -53,10 +54,13 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
       </div>
 
       {/* Movie Poster */}
-      <img
+      <Image
         src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
         alt={movie.title}
         className={styles.moviePoster}
+        width={300} // Adjust width
+        height={450} // Adjust height
+        priority // Optimize for faster loading
       />
 
       {/* Tooltip */}

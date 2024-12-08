@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import Header from "@/components/Header";
 import MovieCard from "@/components/MovieCard";
@@ -11,6 +11,8 @@ interface Movie {
   release_date: string;
   genre_ids: number[];
   youtube_trailer_id: string;
+  genres: string[];
+  release_year: string;
 }
 
 interface Genre {
@@ -27,7 +29,7 @@ const Homepage: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   // Fetch movies with YouTube trailers
-  const fetchMovies = async () => {
+  const fetchMovies = useCallback(async () => {
     try {
       setLoading(true);
       const response = await axios.get(
@@ -40,7 +42,7 @@ const Homepage: React.FC = () => {
             `https://api.themoviedb.org/3/movie/${movie.id}/videos?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`
           );
           const trailer = trailerResponse.data.results.find(
-            (video: any) => video.type === "Trailer" && video.site === "YouTube"
+            (video: { type: string; site: string }) => video.type === "Trailer" && video.site === "YouTube"
           );
           return {
             ...movie,
@@ -54,10 +56,10 @@ const Homepage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page]);
 
   // Fetch movie genres
-  const fetchGenres = async () => {
+  const fetchGenres = useCallback(async () => {
     try {
       const response = await axios.get(
         `https://api.themoviedb.org/3/genre/movie/list?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`
@@ -66,20 +68,26 @@ const Homepage: React.FC = () => {
     } catch (error) {
       console.error("Error fetching genres:", error);
     }
-  };
+  }, []);
 
   // Process movies for MovieCard compatibility
-  const getProcessedMovies = (movies: Movie[]) =>
-    movies.map((movie) => ({
-      ...movie,
-      genres: movie.genre_ids.map((id) => genres.find((g) => g.id === id)?.name || "Unknown"),
-      release_year: movie.release_date.split("-")[0],
-    }));
+  const getProcessedMovies = useCallback(
+    (movies: Movie[]) =>
+      movies.map((movie) => ({
+        ...movie,
+        genres: movie.genre_ids.map((id) => genres.find((g) => g.id === id)?.name || "Unknown"),
+        release_year: movie.release_date.split("-")[0],
+      })),
+    [genres]
+  );
 
   useEffect(() => {
     fetchMovies();
+  }, [fetchMovies]);
+
+  useEffect(() => {
     fetchGenres();
-  }, [page]);
+  }, [fetchGenres]);
 
   const handleFilterByGenre = (genreId: number | null) => {
     setSelectedGenre(genreId);
