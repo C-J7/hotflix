@@ -8,13 +8,13 @@ interface Movie {
   title: string;
   poster_path: string;
   youtube_trailer_id: string;
-  genres: string[]; // Include genres as an array of strings
-  release_year: string; // Include release year
+  genres: string[];
+  release_year: string;
 }
 
 interface CarouselProps {
   title: string;
-  movies: Movie[]; 
+  movies: Movie[];
 }
 
 const Carousel: React.FC<CarouselProps> = ({ title, movies }) => {
@@ -45,7 +45,6 @@ const Carousel: React.FC<CarouselProps> = ({ title, movies }) => {
       <div ref={carouselRef} className={styles.carouselWrapper}>
         {movies.map((movie) => (
           <div key={movie.id} className={styles.carouselItem}>
-            {/* Pass full movie data to MovieCard */}
             <MovieCard movie={movie} />
           </div>
         ))}

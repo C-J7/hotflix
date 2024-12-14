@@ -46,11 +46,11 @@ const Header: React.FC<HeaderProps> = ({ onSearch }) => {
           {/* My Logo */}
           <Link href="/" className="logo-link">
             <Image
-              src="/Favicon.ico"
+              src="/favicon.ico"
               alt="Logo"
               className={styles.logo}
-              width={40} // Adjust width to best fit layout
-              height={40} // Adjust height to best fit layout
+              width={40}
+              height={40} 
               priority // Ensures the logo is loaded quickly
             />
           </Link>

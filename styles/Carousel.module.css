@@ -42,10 +42,11 @@
 .carouselWrapper {
   display: flex;
   overflow-x: auto;
-  scroll-behavior: smooth;
-  scrollbar-width: none;
   gap: 1rem;
   padding: 1rem 0;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 .carouselWrapper::-webkit-scrollbar {

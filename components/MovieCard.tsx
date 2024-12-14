@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { IconPlayerPlayFilled, IconPlus } from "@tabler/icons-react";
+import { IconPlayerPlayFilled, IconPlus, IconMinus } from "@tabler/icons-react";
 import { useRouter } from "next/router";
-import Image from "next/image"; // Use Next.js Image component
+import Image from "next/image";
 import styles from "@/styles/MovieCard.module.css";
 
 interface MovieCardProps {
@@ -10,12 +10,13 @@ interface MovieCardProps {
     title: string;
     poster_path: string;
     youtube_trailer_id: string;
-    genres: string[]; // Array of genres
-    release_year: string; // Release year
+    genres: string[];
+    release_year: string;
   };
+  isWatchlistPage?: boolean;
 }
 
-const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
+const MovieCard: React.FC<MovieCardProps> = ({ movie, isWatchlistPage = false }) => {
   const router = useRouter();
   const [tooltipMessage, setTooltipMessage] = useState<string | null>(null);
 
@@ -25,31 +26,29 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
     }
   };
 
-  const handleAddToWatchlist = () => {
+  const handleRemoveFromWatchlist = () => {
     try {
       const savedWatchlist = localStorage.getItem("watchlist");
-      const watchlist = savedWatchlist ? JSON.parse(savedWatchlist) : []; // Changed to `const`
-
-      if (!watchlist.some((item: typeof movie) => item.id === movie.id)) {
-        watchlist.push(movie);
+      if (savedWatchlist) {
+        let watchlist = JSON.parse(savedWatchlist);
+        watchlist = watchlist.filter((item: typeof movie) => item.id !== movie.id);
         localStorage.setItem("watchlist", JSON.stringify(watchlist));
-        setTooltipMessage("Added to Watchlist");
-      } else {
-        setTooltipMessage("Already in Watchlist");
+        window.dispatchEvent(new Event("watchlistUpdated")); // Notify watchlist page
+        setTooltipMessage("Removed from Watchlist");
       }
     } catch (error) {
-      console.error("Error adding to watchlist:", error);
-      setTooltipMessage("Failed to Add to Watchlist");
+      console.error("Error removing from watchlist:", error);
+      setTooltipMessage("Failed to Remove from Watchlist");
     } finally {
-      setTimeout(() => setTooltipMessage(null), 3000); // Clears the tooltip after 3 seconds
+      setTimeout(() => setTooltipMessage(null), 3000);
     }
   };
-
+  const primaryGenre = movie.genres?.[0] || "Unknown Genre";
   return (
     <div className={styles.movieCard}>
       {/* Genre and Release Year */}
       <div className={styles.topInfo}>
-        <span className={styles.genre}>{movie.genres.join(", ")}</span>
+        <span className={styles.genre}>{primaryGenre}</span>
         <span className={styles.releaseYear}>{movie.release_year}</span>
       </div>
 
@@ -58,9 +57,9 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
         alt={movie.title}
         className={styles.moviePoster}
-        width={300} // Adjust width
-        height={450} // Adjust height
-        priority // Optimize for faster loading
+        width={400}
+        height={450}
+        priority
       />
 
       {/* Tooltip */}
@@ -71,9 +70,16 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
         <IconPlayerPlayFilled size={48} color="white" />
       </div>
 
-      {/* Add to Watchlist Button */}
-      <div className={styles.addOverlay} onClick={handleAddToWatchlist}>
-        <IconPlus size={22} color="white" />
+      {/* Add/Remove Watchlist Button */}
+      <div
+        className={styles.addOverlay}
+        onClick={isWatchlistPage ? handleRemoveFromWatchlist : undefined}
+      >
+        {isWatchlistPage ? (
+          <IconMinus size={22} color="white" />
+        ) : (
+          <IconPlus size={22} color="white" />
+        )}
       </div>
 
       {/* Movie Title */}

@@ -1,6 +1,6 @@
 .about-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  background: linear-gradient(135deg, #421d1d3b, #2f1313, #690007);
   color: #ffffff;
   font-family: 'Inter', sans-serif;
   padding: 2rem;
@@ -31,7 +31,7 @@
 }
 
 .profile-section {
-  background: rgba(22, 33, 62, 0.7);
+  background: rgba(19, 7, 7, 0.811);
   border-radius: 15px;
   padding: 2rem;
   display: flex;
@@ -104,7 +104,7 @@
 }
 
 .highlight-card {
-  background: rgba(22, 33, 62, 0.5);
+  background: rgba(19, 7, 7, 0.811);
   border-radius: 15px;
   padding: 2rem;
   text-align: center;
@@ -118,13 +118,13 @@
 
 .highlight-icon {
   font-size: 3rem;
-  color: #ff4b2b;
+  color: #ffef0b;
   margin-bottom: 1rem;
 }
 
 .highlight-title {
   font-size: 1.5rem;
-  color: #ff4b2b;
+  color: #f3d113;
   margin-bottom: 1rem;
 }
 

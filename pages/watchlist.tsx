@@ -53,9 +53,8 @@ const Watchlist: React.FC = () => {
     [genres]
   );
 
-  useEffect(() => {
-    setIsClient(true);
-
+  // Update watchlist whenever localStorage is updated
+  const updateWatchlist = useCallback(() => {
     const savedWatchlist = localStorage.getItem("watchlist");
     if (savedWatchlist) {
       const watchlistData: Movie[] = JSON.parse(savedWatchlist);
@@ -64,8 +63,20 @@ const Watchlist: React.FC = () => {
   }, [enhanceWatchlist]);
 
   useEffect(() => {
+    setIsClient(true);
+    updateWatchlist();
+  }, [updateWatchlist]);
+
+  useEffect(() => {
     fetchGenres();
   }, [fetchGenres]);
+
+  // Listen for watchlist updates triggered by MovieCard
+  useEffect(() => {
+    const handleWatchlistUpdate = () => updateWatchlist();
+    window.addEventListener("watchlistUpdated", handleWatchlistUpdate);
+    return () => window.removeEventListener("watchlistUpdated", handleWatchlistUpdate);
+  }, [updateWatchlist]);
 
   if (!isClient) {
     return <div>Loading...</div>;
@@ -82,7 +93,7 @@ const Watchlist: React.FC = () => {
           ) : (
             <div className={styles.movieGrid}>
               {watchlist.map((movie) => (
-                <MovieCard key={movie.id} movie={movie} />
+                <MovieCard key={movie.id} movie={movie} isWatchlistPage={true} />
               ))}
             </div>
           )}

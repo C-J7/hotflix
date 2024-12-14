@@ -7,7 +7,7 @@
 }
 
 .movieCard:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 .moviePoster {
@@ -30,12 +30,10 @@
   background-color: rgba(0, 0, 0, 0.6);
   padding: 5px;
   border-radius: 4px;
-  opacity: 0;
-  transition: opacity 0.3s ease;
 }
 
-.movieCard:hover .topInfo {
-  opacity: 1;
+.alwaysVisible {
+  opacity: 1 !important;
 }
 
 .genre {
@@ -74,16 +72,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
   background-color: rgba(0, 0, 0, 0.6);
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  padding: 5px 10px;
+  border-radius: 20px;
 }
 
-.movieCard:hover .addOverlay {
-  opacity: 1;
+.watchlistButton {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.watchlistButton span {
+  color: white;
+  font-size: 0.8rem;
 }
 
 .movieInfo {
@@ -94,12 +96,6 @@
   padding: 0.5rem;
   background-color: rgba(0, 0, 0, 0.4);
   text-align: center;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.movieCard:hover .movieInfo {
-  opacity: 1;
 }
 
 .movieTitle {
