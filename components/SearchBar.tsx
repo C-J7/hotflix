@@ -3,7 +3,20 @@ import { IconSearch, IconX } from "@tabler/icons-react";
 import styles from "@/styles/Home.module.css";
 
 interface SearchBarProps {
-  onSearch: (query: string) => void;
+  onSearch: (query: string, results: Movie[]) => void; 
+}
+
+
+interface Movie {
+  id: number;
+  title: string;
+  poster_path?: string; 
+  release_date?: string;
+  overview?: string;
+}
+
+interface SearchResponse {
+  results: Movie[];
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
@@ -13,11 +26,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
-      onSearch(query);
+      const results = await fetchSearchResults(query);
+      onSearch(query, results); 
     }
   };
 
-  const fetchSearchResults = async (query: string) => {
+  const fetchSearchResults = async (query: string): Promise<Movie[]> => {
     const options = {
       method: "GET",
       headers: {
@@ -33,17 +47,28 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
         )}`,
         options
       );
-      const data = await response.json();
-      console.log("Search Results:", data.results); // Debugging purposes
+
+      if (!response.ok) {
+        console.error("Error fetching search results:", response.statusText);
+        return [];
+      }
+
+      const data: SearchResponse = await response.json(); // Strictly type the API response
+      return data.results || [];
     } catch (error) {
       console.error("Error fetching search results:", error);
+      return [];
     }
   };
 
   return (
     <div className={styles.searchBar}>
       {!isOpen && (
-        <button className={styles.searchIcon} onClick={() => setIsOpen(true)} aria-label="Open Search">
+        <button
+          className={styles.searchIcon}
+          onClick={() => setIsOpen(true)}
+          aria-label="Open Search"
+        >
           <IconSearch size={20} />
         </button>
       )}
