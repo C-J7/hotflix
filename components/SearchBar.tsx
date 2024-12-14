@@ -36,7 +36,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
       method: "GET",
       headers: {
         accept: "application/json",
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_ACCESS_TOKEN}`, // Replace with your environment variable
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_API_KEY}`, 
       },
     };
 
@@ -53,7 +53,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
         return [];
       }
 
-      const data: SearchResponse = await response.json(); // Strictly type the API response
+      const data: SearchResponse = await response.json();
       return data.results || [];
     } catch (error) {
       console.error("Error fetching search results:", error);
