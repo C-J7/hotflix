@@ -80,15 +80,15 @@ Follow these steps to run Hotflix locally:
    The app will be available at: `http://localhost:3000`
 
 
-## **Message**
+## **Purpose**
 
 Hotflix was built to demonstrate the capabilities of **modern web development** frameworks like **Next.js** and how seamlessly APIs and local data can work together. The app emphasizes performance, usability, and functionality, making it a great starting point for anyone exploring **full-stack movie applications**.
 
 Thank you for checking out Hotflix! I hope you find it helpful and inspiring. Contributions are welcome! 😊  
 
 
-## **Contact**
+## **REACH OUT**
 
 If you have any questions, suggestions, or feedback, feel free to reach out:  
-**Your Name**  
+**C-J7**  
 🔗 [GitHub](https://github.com/C-J7)  
