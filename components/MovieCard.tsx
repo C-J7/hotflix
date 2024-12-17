@@ -29,7 +29,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, isWatchlistPage = false })
   const handleAddToWatchlist = () => {
     try {
       const savedWatchlist = localStorage.getItem("watchlist");
-      let watchlist = savedWatchlist ? JSON.parse(savedWatchlist) : [];
+      const watchlist = savedWatchlist ? JSON.parse(savedWatchlist) : [];
 
       // Check if the movie is already in the watchlist
       const isAlreadyAdded = watchlist.some((item: typeof movie) => item.id === movie.id);

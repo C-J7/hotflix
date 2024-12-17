@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { IconPlayerPlay } from "@tabler/icons-react";
 import styles from "@/styles/Streaming.module.css";
 import axios from "axios";
+import Image from "next/image";
 
 interface Movie {
   id: number;
@@ -115,10 +116,14 @@ const Streaming: React.FC = () => {
       {similarMovies.length > 0 ? (
         similarMovies.map((movie) => (
           <div key={movie.id} className={styles.movieCard}>
-            <img
+            <Image
               src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
               alt={movie.title}
               className={styles.moviePoster}
+              layout="responsive"
+              width={300}  // Intrinsic width
+              height={450} // Intrinsic height
+              priority
             />
             <p className={styles.movieTitle}>{movie.title}</p>
           </div>
