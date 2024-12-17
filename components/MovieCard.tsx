@@ -6,10 +6,10 @@ import styles from "@/styles/MovieCard.module.css";
 
 interface MovieCardProps {
   movie: {
-    id: number;
+    id: number; // TMDB Movie ID
     title: string;
     poster_path: string;
-    youtube_trailer_id: string;
+    youtube_trailer_id: string; // YouTube Trailer ID
     genres: string[];
     release_year: string;
   };
@@ -21,11 +21,36 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, isWatchlistPage = false })
   const [tooltipMessage, setTooltipMessage] = useState<string | null>(null);
 
   const handlePlayClick = () => {
-    if (movie.youtube_trailer_id) {
-      router.push(`/streaming?video_id=${movie.youtube_trailer_id}`);
+    // Pass both movie.id (TMDB ID) and movie.youtube_trailer_id (YouTube ID)
+    router.push(`/streaming?video_id=${movie.id}&trailer_id=${movie.youtube_trailer_id}`);
+  };
+
+  // Add a movie to the watchlist
+  const handleAddToWatchlist = () => {
+    try {
+      const savedWatchlist = localStorage.getItem("watchlist");
+      let watchlist = savedWatchlist ? JSON.parse(savedWatchlist) : [];
+
+      // Check if the movie is already in the watchlist
+      const isAlreadyAdded = watchlist.some((item: typeof movie) => item.id === movie.id);
+
+      if (!isAlreadyAdded) {
+        watchlist.push(movie);
+        localStorage.setItem("watchlist", JSON.stringify(watchlist));
+        setTooltipMessage("Added to Watchlist");
+        window.dispatchEvent(new Event("watchlistUpdated"));
+      } else {
+        setTooltipMessage("Already in Watchlist");
+      }
+    } catch (error) {
+      console.error("Error adding to watchlist:", error);
+      setTooltipMessage("Failed to Add to Watchlist");
+    } finally {
+      setTimeout(() => setTooltipMessage(null), 3000);
     }
   };
 
+  // Remove a movie from the watchlist
   const handleRemoveFromWatchlist = () => {
     try {
       const savedWatchlist = localStorage.getItem("watchlist");
@@ -43,7 +68,9 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, isWatchlistPage = false })
       setTimeout(() => setTooltipMessage(null), 3000);
     }
   };
+
   const primaryGenre = movie.genres?.[0] || "Unknown Genre";
+
   return (
     <div className={styles.movieCard}>
       {/* Genre and Release Year */}
@@ -73,7 +100,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie, isWatchlistPage = false })
       {/* Add/Remove Watchlist Button */}
       <div
         className={styles.addOverlay}
-        onClick={isWatchlistPage ? handleRemoveFromWatchlist : undefined}
+        onClick={isWatchlistPage ? handleRemoveFromWatchlist : handleAddToWatchlist}
       >
         {isWatchlistPage ? (
           <IconMinus size={22} color="white" />

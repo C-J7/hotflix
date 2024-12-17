@@ -75,6 +75,7 @@
   background-color: rgba(0, 0, 0, 0.6);
   padding: 5px 10px;
   border-radius: 20px;
+  z-index: 900
 }
 
 .watchlistButton {
