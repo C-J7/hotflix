@@ -26,7 +26,7 @@ The app prioritizes **functionality** and **performance** while maintaining a cl
 4. **Recommendations Page**: View recommended or similar movies.  
 5. **Streaming Page**:  
    - Watch trailers directly via embedded YouTube videos.  
-   - A link to external movie streaming platforms is provided.  
+   - A "Watch Now" Button to watch the full movie via SuperEmbed.
 
 
 ## **Tech Stack** ⚙️
