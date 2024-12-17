@@ -1,40 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# **Hotflix - Movie Watchlist and Recommendation App By C-J7** 🎬  
 
-## Getting Started
+Welcome to **Hotflix**, a sleek and feature-rich movie application that allows users to discover movies, add them to a personal watchlist, and explore tailored recommendations. Inspired by the simplicity and functionality of streaming platforms, Hotflix aims to deliver a clean and user-friendly experience.
 
-First, run the development server:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## **Overview**
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Hotflix is a Next.js-powered web application designed to provide the following features:  
+- Browse and explore trending movies fetched via the **TMDB API**.  
+- Add or remove movies to/from a personal **Watchlist**.  
+- Watch movie trailers with seamless integration of YouTube.  
+- Explore **similar movies** and genres for tailored recommendations.  
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+The app prioritizes **functionality** and **performance** while maintaining a clean and intuitive interface.
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+## **Features**
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Landing Page**: A sleek cinematic sign-in page.  
+2. **Homepage**:  
+   - Browse movies fetched dynamically using the TMDB API.  
+   - Filter movies by **genre**, **release year**, and other parameters.  
+3. **Watchlist**:  
+   - Add or remove movies to/from a dedicated watchlist.  
+   - Stored locally using **Local Storage** for persistence.  
+4. **Recommendations Page**: View recommended or similar movies.  
+5. **Streaming Page**:  
+   - Watch trailers directly via embedded YouTube videos.  
+   - A link to external movie streaming platforms is provided.  
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+## **Tech Stack** ⚙️
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+The Hotflix app leverages modern technologies for performance and maintainability:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| **Technology**        | **Description**                                |
+|------------------------|-----------------------------------------------|
+| **Next.js**           | React framework for server-side rendering.    |
+| **TypeScript**        | Static typing for better code quality.        |
+| **TMDB API**          | Fetch movie data (details, trailers, posters).|
+| **YouTube Embed**     | Seamless trailer streaming integration.       |
+| **Local Storage**     | Client-side persistence for the watchlist.    |
+| **Vercel**            | Deployment platform for hosting the app.      |
+| **CSS Modules**       | Scoped and maintainable component styling.    |
+| **Tabler Icons**      | Icon set for enhancing UI design.             |
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## **Deployment**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+The Hotflix app is live and can be accessed here:  
+🔗 [Hotflix on Vercel](https://hotflix-chi.vercel.app/)  
+
+
+## **Setup Instructions**
+
+Follow these steps to run Hotflix locally:
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/C-J7/hotflix
+   cd hotflix
+   ```
+
+2. **Install Dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set Up Environment Variables**  
+   Create a `.env.local` file in the root directory and add your TMDB API key:  
+   ```env
+   NEXT_PUBLIC_TMDB_API_KEY=YOUR_TMDB_API_KEY
+   ```
+
+4. **Run the Development Server**
+   ```bash
+   npm run dev
+   ```
+
+   The app will be available at: `http://localhost:3000`
+
+
+## **Message**
+
+Hotflix was built to demonstrate the capabilities of **modern web development** frameworks like **Next.js** and how seamlessly APIs and local data can work together. The app emphasizes performance, usability, and functionality, making it a great starting point for anyone exploring **full-stack movie applications**.
+
+Thank you for checking out Hotflix! I hope you find it helpful and inspiring. Contributions are welcome! 😊  
+
+
+## **Contact**
+
+If you have any questions, suggestions, or feedback, feel free to reach out:  
+**Your Name**  
+🔗 [GitHub](https://github.com/C-J7)  

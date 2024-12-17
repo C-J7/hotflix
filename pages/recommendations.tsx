@@ -33,7 +33,7 @@ const Recommendations: React.FC = () => {
   const [comedyMovies, setComedyMovies] = useState<EnhancedMovie[]>([]);
   const [genreMapping, setGenreMapping] = useState<Record<number, string>>({});
 
-  // Fetch genres and create a mapping
+  
   const fetchGenres = useCallback(async () => {
     try {
       const response = await axios.get(
@@ -50,7 +50,6 @@ const Recommendations: React.FC = () => {
     }
   }, []);
 
-  // Fetch movies with trailers and enhance them
   const fetchMoviesWithTrailers = useCallback(
     async (movies: Movie[]): Promise<EnhancedMovie[]> => {
       return await Promise.all(
@@ -83,7 +82,6 @@ const Recommendations: React.FC = () => {
     [genreMapping]
   );
 
-  // Fetch movie categories
   const fetchMovies = useCallback(async () => {
     try {
       const [allTimeRes, trendingRes, genreRes, moodRes, actionRes, comedyRes] = await Promise.all([
@@ -119,12 +117,12 @@ const Recommendations: React.FC = () => {
   }, [fetchMoviesWithTrailers]);
 
   useEffect(() => {
-    fetchGenres(); // Fetch genres first to create mapping
+    fetchGenres(); 
   }, [fetchGenres]);
 
   useEffect(() => {
     if (Object.keys(genreMapping).length > 0) {
-      fetchMovies(); // Fetch movies after genre mapping is ready
+      fetchMovies(); 
     }
   }, [genreMapping, fetchMovies]);
 

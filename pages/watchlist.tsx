@@ -27,7 +27,6 @@ const Watchlist: React.FC = () => {
   const [genres, setGenres] = useState<Genre[]>([]);
   const [isClient, setIsClient] = useState(false);
 
-  // Fetch genres from TMDB API
   const fetchGenres = useCallback(async () => {
     try {
       const response = await fetch(
@@ -40,7 +39,6 @@ const Watchlist: React.FC = () => {
     }
   }, []);
 
-  // Enhance watchlist movies with genres and release year
   const enhanceWatchlist = useCallback(
     (movies: Movie[]): ProcessedMovie[] =>
       movies.map((movie) => ({

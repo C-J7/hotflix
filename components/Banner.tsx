@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "@/styles/Home.module.css";
 
-// Define the type for the movie object
 interface Movie {
   backdrop_path: string | null; // Some movies might not have a backdrop
 }
@@ -18,7 +17,6 @@ const Banner: React.FC = () => {
           `https://api.themoviedb.org/3/movie/now_playing?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US&page=1`
         );
 
-        // Explicitly type response.data.results
         const images = response.data.results
           .filter((movie: Movie) => movie.backdrop_path) // Ensure there's a valid backdrop
           .map((movie: Movie) => `https://image.tmdb.org/t/p/original${movie.backdrop_path}`);
