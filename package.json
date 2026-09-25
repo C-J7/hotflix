@@ -11,21 +11,21 @@
   "dependencies": {
     "@react-oauth/google": "0.12.1",
     "@tabler/icons-react": "3.24.0",
-    "axios": "1.7.9",
+    "axios": "^1.20.0",
     "bcryptjs": "2.4.3",
-    "body-parser": "2.0.2",
+    "body-parser": "^2.3.0",
     "cors": "2.8.5",
     "dotenv": "^16.4.7",
-    "express": "5.0.1",
+    "express": "^5.2.1",
     "google-auth-library": "9.15.0",
     "jsonwebtoken": "9.0.2",
-    "next": "15.0.3",
+    "next": "^15.5.26",
     "pg": "8.13.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-horizontal-scrolling-menu": "8.2.0",
     "react-icons": "5.4.0",
-    "swiper": "11.1.15"
+    "swiper": "^14.2.0"
   },
   "devDependencies": {
     "@types/bcryptjs": "2.4.6",
