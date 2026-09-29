@@ -1,0 +1,217 @@
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  min-width: 0;
+}
+
+.media {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line);
+  transition:
+    box-shadow var(--dur-micro) var(--ease-out),
+    transform var(--dur) var(--ease-out);
+}
+
+.poster {
+  aspect-ratio: 2 / 3;
+}
+
+.backdrop {
+  aspect-ratio: 16 / 9;
+}
+
+.img {
+  object-fit: cover;
+  transition:
+    opacity var(--dur) var(--ease-out),
+    transform 700ms var(--ease-out) !important;
+}
+
+.fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  background: linear-gradient(160deg, var(--surface-2), var(--surface));
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding-inline: 0.1rem;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-variation-settings: "opsz" 24;
+  font-size: 1.02rem;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color var(--dur-micro) var(--ease-out);
+}
+
+.card[data-variant="backdrop"] .title {
+  font-size: 1.12rem;
+}
+
+/* The title link stretches over the whole card so the entire tile is clickable. */
+.link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: var(--radius);
+}
+
+.link:focus-visible {
+  outline: none;
+}
+
+.link:focus-visible::after {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+}
+
+.rating svg {
+  color: var(--accent);
+}
+
+.actions {
+  position: absolute;
+  z-index: 2;
+  right: 0.55rem;
+  bottom: 0.55rem;
+  display: flex;
+  gap: 0.4rem;
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity var(--dur-micro) var(--ease-out),
+    transform var(--dur-micro) var(--ease-out);
+}
+
+.play {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--text);
+  color: var(--bg);
+  padding-left: 2px;
+  transition:
+    transform var(--dur-micro) var(--ease-out),
+    background-color var(--dur-micro) var(--ease-out);
+}
+
+.play:hover {
+  background: var(--accent);
+  transform: scale(1.06);
+}
+
+/* A scrim so the action buttons stay legible on bright posters. */
+.media::after {
+  content: "";
+  position: absolute;
+  inset: 45% 0 0 0;
+  background: linear-gradient(to top, rgba(10, 13, 19, 0.7), transparent);
+  opacity: 0;
+  transition: opacity var(--dur-micro) var(--ease-out);
+  pointer-events: none;
+}
+
+.card:focus-within .actions,
+.card:focus-within .media::after {
+  opacity: 1;
+  transform: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card:hover .media {
+    transform: translateY(-4px);
+    box-shadow:
+      0 0 0 1px rgba(242, 169, 59, 0.45),
+      0 22px 40px -22px rgba(0, 0, 0, 0.9);
+  }
+
+  .card:hover .img {
+    transform: scale(1.05);
+  }
+
+  .card:hover .actions,
+  .card:hover .media::after {
+    opacity: 1;
+    transform: none;
+  }
+
+  .card:hover .title {
+    color: var(--accent);
+  }
+}
+
+@media (hover: none) {
+  .actions,
+  .media::after {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- Ranked (Top 10) ---------- */
+
+.ranked {
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 0;
+}
+
+.rank {
+  flex: none;
+  margin-right: -0.9rem;
+  font-family: var(--font-display);
+  font-variation-settings: "opsz" 144;
+  font-size: clamp(6.5rem, 10vw, 9.5rem);
+  font-weight: 700;
+  line-height: 0.78;
+  letter-spacing: -0.06em;
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(236, 231, 222, 0.28);
+  transition:
+    -webkit-text-stroke-color var(--dur-micro) var(--ease-out),
+    color var(--dur) var(--ease-out);
+  user-select: none;
+}
+
+.rankedMedia {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ranked:hover .rank {
+    -webkit-text-stroke-color: var(--accent);
+    color: var(--accent-soft);
+  }
+}

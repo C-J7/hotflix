@@ -1,1 +1,0 @@
-//User model and database queries

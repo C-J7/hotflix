@@ -1,0 +1,41 @@
+.icon {
+  display: inline-grid;
+  place-items: center;
+}
+
+.icon[data-pulse="true"] {
+  animation: pop 360ms var(--ease-out);
+}
+
+@keyframes pop {
+  0% { transform: scale(0.6) rotate(-45deg); opacity: 0.4; }
+  60% { transform: scale(1.18) rotate(0deg); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+.round {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(236, 231, 222, 0.35);
+  background: rgba(10, 13, 19, 0.72);
+  color: var(--text);
+  transition:
+    background-color var(--dur-micro) var(--ease-out),
+    border-color var(--dur-micro) var(--ease-out),
+    color var(--dur-micro) var(--ease-out),
+    transform var(--dur-micro) var(--ease-out);
+}
+
+.round:hover {
+  border-color: var(--text);
+  transform: scale(1.06);
+}
+
+.round[aria-pressed="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}

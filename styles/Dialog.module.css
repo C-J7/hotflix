@@ -1,0 +1,68 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: clamp(0.75rem, 3vw, 2rem);
+  background: rgba(5, 7, 11, 0.82);
+  animation: overlayIn 220ms var(--ease-out) both;
+}
+
+.overlay[data-variant="top"] {
+  align-items: flex-start;
+  padding-top: min(12vh, 110px);
+}
+
+.overlay[data-variant="sheet"] {
+  padding: 0;
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+.overlay[data-closing="true"] {
+  animation: overlayOut 200ms var(--ease-out) both;
+}
+
+.panel {
+  position: relative;
+  width: 100%;
+  animation: panelIn 320ms var(--ease-out) both;
+}
+
+.overlay[data-closing="true"] .panel {
+  animation: panelOut 200ms var(--ease-in-out) both;
+}
+
+.overlay[data-variant="sheet"] .panel {
+  animation-name: sheetIn;
+}
+
+.overlay[data-variant="sheet"][data-closing="true"] .panel {
+  animation-name: sheetOut;
+}
+
+@keyframes overlayIn {
+  from { opacity: 0; }
+}
+
+@keyframes overlayOut {
+  to { opacity: 0; }
+}
+
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.975); }
+}
+
+@keyframes panelOut {
+  to { opacity: 0; transform: translateY(6px) scale(0.985); }
+}
+
+@keyframes sheetIn {
+  from { opacity: 0; transform: translateY(-12px); }
+}
+
+@keyframes sheetOut {
+  to { opacity: 0; transform: translateY(-8px); }
+}

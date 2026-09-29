@@ -1,0 +1,126 @@
+.skip {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 300;
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+  transform: translateY(-160%);
+  transition: transform var(--dur-micro) var(--ease-out);
+}
+
+.skip:focus-visible {
+  transform: none;
+}
+
+.progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 150;
+  height: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 10px rgba(242, 169, 59, 0.6);
+  transform: scaleX(0);
+  transform-origin: left;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.progress[data-state="loading"] {
+  opacity: 1;
+  transform: scaleX(0.7);
+  transition: transform 4s cubic-bezier(0.1, 0.8, 0.3, 1);
+}
+
+.progress[data-state="done"] {
+  opacity: 0;
+  transform: scaleX(1);
+  transition:
+    transform 180ms var(--ease-out),
+    opacity 320ms var(--ease-out) 180ms;
+}
+
+.main {
+  min-height: 70vh;
+  padding-top: var(--header-h);
+  animation: pageIn var(--dur) var(--ease-out) both;
+}
+
+.main[data-overlay="true"] {
+  padding-top: 0;
+}
+
+@keyframes pageIn {
+  from {
+    opacity: 0;
+  }
+}
+
+.footer {
+  margin-top: clamp(3rem, 7vw, 6rem);
+  padding-block: 3rem 2.5rem;
+  border-top: 1px solid var(--line);
+  background: var(--bg-raised);
+}
+
+.footInner {
+  display: grid;
+  grid-template-columns: 1.2fr auto 1.4fr;
+  gap: 2rem 3rem;
+  align-items: start;
+}
+
+.footBrand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.footBrand p,
+.footMeta p {
+  max-width: 44ch;
+  font-size: 0.84rem;
+  color: var(--text-faint);
+}
+
+.footNav {
+  display: grid;
+  gap: 0.55rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.footNav a,
+.footMeta a {
+  transition: color var(--dur-micro) var(--ease-out);
+}
+
+.footNav a:hover,
+.footMeta a:hover {
+  color: var(--accent);
+}
+
+.footMeta {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.footMeta a {
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 860px) {
+  .footInner {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .footMeta {
+    grid-column: 1 / -1;
+  }
+}

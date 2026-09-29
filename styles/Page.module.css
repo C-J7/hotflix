@@ -1,0 +1,79 @@
+.header {
+  position: relative;
+  isolation: isolate;
+  padding-block: clamp(2.5rem, 6vw, 5rem) clamp(1.75rem, 3.5vw, 2.75rem);
+  margin-bottom: clamp(1.75rem, 3.5vw, 2.75rem);
+  border-bottom: 1px solid var(--line);
+}
+
+.backdrop {
+  position: absolute;
+  inset: calc(var(--header-h) * -1) 0 0 0;
+  z-index: -1;
+  overflow: hidden;
+  opacity: 0.32;
+}
+
+.backdrop img {
+  object-fit: cover;
+  object-position: center 25%;
+}
+
+.backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, var(--bg) 5%, rgba(10, 13, 19, 0.6) 60%, rgba(10, 13, 19, 0.85) 100%),
+    linear-gradient(to right, var(--bg) 0%, transparent 70%);
+}
+
+.inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem 3rem;
+}
+
+.titles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.titles > * {
+  animation: rise 700ms var(--ease-out) both;
+}
+
+.titles > :nth-child(2) { animation-delay: 70ms; }
+.titles > :nth-child(3) { animation-delay: 140ms; }
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+.title {
+  font-size: clamp(2.6rem, 7vw, 5.75rem);
+  text-wrap: balance;
+}
+
+.title em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.lede {
+  max-width: 54ch;
+  font-size: clamp(1rem, 1.3vw, 1.1rem);
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.aside {
+  animation: rise 700ms var(--ease-out) 200ms both;
+}
