@@ -1,0 +1,217 @@
+.cover {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: max(100svh, 640px);
+  padding-bottom: clamp(2rem, 5vw, 3.5rem);
+  overflow: hidden;
+}
+
+.backdrops {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+}
+
+.backdrop {
+  object-fit: cover;
+  transform: scale(1.08);
+  transition:
+    opacity 1.4s var(--ease-out),
+    transform 12s linear !important;
+}
+
+.backdrop[data-loaded="true"]:not([data-active="true"]) {
+  opacity: 0;
+}
+
+.backdrop[data-active="true"] {
+  transform: scale(1);
+}
+
+/* Editorial scrim: heavy on the reading side and floor, clear on the right so the image breathes. */
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(to top, var(--bg) 0%, rgba(10, 13, 19, 0.55) 38%, rgba(10, 13, 19, 0.1) 70%, rgba(10, 13, 19, 0.55) 100%),
+    linear-gradient(to right, rgba(10, 13, 19, 0.92) 0%, rgba(10, 13, 19, 0.55) 45%, transparent 75%);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.35rem;
+}
+
+.content > * {
+  animation: rise 800ms var(--ease-out) both;
+}
+
+.content > :nth-child(2) { animation-delay: 90ms; }
+.content > :nth-child(3) { animation-delay: 180ms; }
+.content > :nth-child(4) { animation-delay: 260ms; }
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+
+.kicker {
+  color: var(--text-muted);
+}
+
+.headline {
+  max-width: 13ch;
+  font-size: clamp(3rem, 8.2vw, 7.25rem);
+  line-height: 0.96;
+  text-wrap: balance;
+}
+
+.headline em {
+  font-style: italic;
+  font-variation-settings: "opsz" 144, "SOFT" 100;
+  color: var(--accent);
+}
+
+.lede {
+  max-width: 46ch;
+  font-size: clamp(1rem, 1.35vw, 1.15rem);
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 0.4rem;
+}
+
+.cta {
+  height: 54px;
+  padding: 0 1.7rem;
+  font-size: 1rem;
+}
+
+.cta svg {
+  transition: transform var(--dur-micro) var(--ease-out);
+}
+
+.cta:hover svg {
+  transform: translateX(4px);
+}
+
+/* A photo-credit style caption naming the film behind the headline. */
+.caption {
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin-top: clamp(2rem, 6vw, 4rem);
+  font-size: 0.8rem;
+  color: var(--text-faint);
+  animation: captionIn 900ms var(--ease-out) both;
+}
+
+.caption span {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.66rem;
+}
+
+.caption a {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.98rem;
+  color: var(--text-muted);
+  transition: color var(--dur-micro) var(--ease-out);
+}
+
+.caption a:hover {
+  color: var(--accent);
+}
+
+@keyframes captionIn {
+  from {
+    opacity: 0;
+  }
+}
+
+/* ---------- Ticker ---------- */
+
+.ticker {
+  padding-block: clamp(1.5rem, 3vw, 2.5rem) 0;
+}
+
+.tickerLabel {
+  margin-bottom: 1rem;
+}
+
+.track {
+  display: flex;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+.reel {
+  display: flex;
+  gap: 0.9rem;
+  padding-right: 0.9rem;
+  list-style: none;
+  animation: reel 70s linear infinite;
+}
+
+.track:hover .reel,
+.track:focus-within .reel {
+  animation-play-state: paused;
+}
+
+@keyframes reel {
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.poster {
+  position: relative;
+  display: block;
+  width: clamp(104px, 11vw, 148px);
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line);
+  transition:
+    transform var(--dur) var(--ease-out),
+    box-shadow var(--dur-micro) var(--ease-out);
+}
+
+.poster img {
+  object-fit: cover;
+}
+
+.poster:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+@media (max-width: 640px) {
+  .ctas {
+    width: 100%;
+  }
+
+  .cta {
+    flex: 1;
+  }
+
+  .caption {
+    justify-content: flex-start;
+  }
+}

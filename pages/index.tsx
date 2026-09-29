@@ -1,81 +1,111 @@
-import { useRouter } from "next/router";
-import Head from "next/head";
-import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
-import GoogleAuthProvider from "@/components/GoogleAuthProvider"; // Import the GoogleAuthProvider
-import styles from "@/styles/Home.module.css";
-import Banner from "@/components/Banner";
+import type { GetStaticProps } from "next"
+import Link from "next/link"
+import { useEffect, useState } from "react"
+import { IconArrowRight } from "@tabler/icons-react"
+import FadeImage from "@/components/FadeImage"
+import Seo from "@/components/Seo"
+import { backdropUrl, posterUrl } from "@/lib/format"
+import { hasBackdrop, listMovies } from "@/lib/tmdb"
+import type { Movie } from "@/lib/types"
+import type { HotflixPage } from "./_app"
+import styles from "@/styles/Landing.module.css"
 
-export default function Home() {
-  const router = useRouter();
+type Props = { covers: Movie[]; ticker: Movie[]; edition: string }
 
-  // Handle successful Google Sign-In
-  const handleGoogleSuccess = async (response: CredentialResponse) => {
-    if (response.credential) {
-      try {
-        // Send the token to the backend to verify and receive the JWT
-        const res = await fetch("/backend/auth/google-login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ token: response.credential }),
-        });
+const Landing: HotflixPage<Props> = ({ covers, ticker, edition }) => {
+  const [index, setIndex] = useState(0)
 
-        if (!res.ok) throw new Error("Failed to login with Google");
+  useEffect(() => {
+    if (covers.length < 2 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+    const id = window.setInterval(() => setIndex((i) => (i + 1) % covers.length), 7000)
+    return () => window.clearInterval(id)
+  }, [covers.length])
 
-        const data = await res.json();
-        console.log("JWT Token Received:", data.token);
-
-        // Save JWT to localStorage or cookie (depending on preference)
-        localStorage.setItem("authToken", data.token);
-
-        // Redirect to homepage after successful sign-in
-        router.push("/homepage");
-      } catch (error) {
-        console.error("Google Sign-In Error:", error);
-      }
-    } else {
-      console.error("No Google Credential Found");
-    }
-  };
-
-  // Handle Explore Movies (without sign-in)
-  const handleExploreMovies = () => {
-    router.push("/homepage"); // Redirect to homepage
-  };
+  const current = covers[index]
 
   return (
-    <GoogleAuthProvider>
-      <>
-        <Head>
-          <title>Welcome to Hotflix</title>
-          <meta name="description" content="The ultimate movie watchlist and recommendation system" />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
-        <Banner />
-        <div className={styles.page}>
-          <main className={styles.main}>
-            <div className={styles.contentWrapper}>
-              <h1 className={styles.Maintext}>Welcome to HOTFLIX</h1>
-              <p className={styles.subtitle}>The ultimate movie watchlist and recommendation system!</p>
+    <>
+      <Seo />
 
-              {/* Explore Movies Button */}
-              <button className={styles.ExploreButton} onClick={handleExploreMovies}>
-                Explore Movies
-              </button>
-
-              {/* Google Sign-In Button */}
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={() => console.error("Google Sign-In Error")}
-                useOneTap // Optional: one-tap sign-in functionality
-              />
-            </div>
-          </main>
+      <section className={styles.cover}>
+        <div className={styles.backdrops} aria-hidden>
+          {covers.map((m, i) => {
+            const src = backdropUrl(m.backdropPath, "original")
+            return src ? (
+              <FadeImage key={m.id} src={src} alt="" fill sizes="100vw" priority={i === 0} data-active={i === index} className={styles.backdrop} />
+            ) : null
+          })}
         </div>
-        <footer className={styles.footer}>
-          <p>Built by <i>C-J7</i></p>
-        </footer>
-      </>
-    </GoogleAuthProvider>
-  );
+        <div className={styles.scrim} aria-hidden />
+
+        <div className={`shell ${styles.content}`}>
+          <p className={`kicker ${styles.kicker}`}>Film discovery · {edition}</p>
+          <h1 className={`display ${styles.headline}`}>
+            Find something <em>worth</em> watching tonight.
+          </h1>
+          <p className={styles.lede}>
+            Trailers, ratings and hand-picked collections across thousands of films. No account, no noise. Just
+            the good stuff, arranged well.
+          </p>
+          <div className={styles.ctas}>
+            <Link href="/browse" className={`btn btn-primary ${styles.cta}`}>
+              Explore movies <IconArrowRight size={18} />
+            </Link>
+            <Link href="/collections" className={`btn btn-ghost ${styles.cta}`}>
+              Browse collections
+            </Link>
+          </div>
+        </div>
+
+        {current && (
+          <p className={`shell ${styles.caption}`} key={current.id}>
+            <span>On screen</span>
+            <Link href={`/movie/${current.id}`}>{current.title}</Link>
+          </p>
+        )}
+      </section>
+
+      {ticker.length > 0 && (
+        <section className={styles.ticker} aria-label="Now showing">
+          <p className={`shell kicker ${styles.tickerLabel}`}>Now showing</p>
+          <div className={styles.track}>
+            {[0, 1].map((copy) => (
+              <ul key={copy} className={styles.reel} aria-hidden={copy === 1}>
+                {ticker.map((m) => {
+                  const src = posterUrl(m.posterPath, "w342")
+                  return (
+                    <li key={m.id}>
+                      <Link href={`/movie/${m.id}`} className={styles.poster} tabIndex={copy === 1 ? -1 : undefined} aria-label={m.title}>
+                        {src && <FadeImage src={src} alt="" fill sizes="150px" />}
+                      </Link>
+                    </li>
+                  )
+                })}
+              </ul>
+            ))}
+          </div>
+        </section>
+      )}
+    </>
+  )
 }
+
+Landing.overlayHeader = true
+
+export const getStaticProps: GetStaticProps<Props> = async () => {
+  const [nowPlaying, trending] = await Promise.all([
+    listMovies("/movie/now_playing", {}, hasBackdrop),
+    listMovies("/trending/movie/day"),
+  ])
+
+  return {
+    props: {
+      covers: nowPlaying.slice(0, 6),
+      ticker: trending.slice(0, 16),
+      edition: new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" }),
+    },
+    revalidate: 3600,
+  }
+}
+
+export default Landing

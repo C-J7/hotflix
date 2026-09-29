@@ -1,0 +1,154 @@
+.row {
+  --edge: max(var(--gutter), calc((100vw - var(--max-w)) / 2 + var(--gutter)));
+  padding-block: clamp(1.6rem, 3.2vw, 2.6rem);
+}
+
+.row[data-variant="poster"] { --card-w: clamp(132px, 14.5vw, 196px); }
+.row[data-variant="backdrop"] { --card-w: clamp(250px, 27vw, 380px); }
+.row[data-variant="ranked"] { --card-w: clamp(196px, 20vw, 272px); }
+.row[data-variant="cast"] { --card-w: clamp(104px, 10vw, 132px); }
+
+.head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.1rem;
+}
+
+.titles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-variation-settings: "opsz" 72, "SOFT" 30;
+  font-size: clamp(1.45rem, 2.4vw, 2rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex: none;
+}
+
+.seeAll {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-right: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: color var(--dur-micro) var(--ease-out);
+}
+
+.seeAll svg {
+  transition: transform var(--dur-micro) var(--ease-out);
+}
+
+.seeAll:hover {
+  color: var(--accent);
+}
+
+.seeAll:hover svg {
+  transform: translateX(3px);
+}
+
+.arrow {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--line-strong);
+  color: var(--text);
+  transition:
+    border-color var(--dur-micro) var(--ease-out),
+    background-color var(--dur-micro) var(--ease-out),
+    opacity var(--dur-micro) var(--ease-out);
+}
+
+.arrow:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.arrow:disabled {
+  opacity: 0.28;
+  cursor: default;
+}
+
+.track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: var(--card-w);
+  gap: clamp(0.8rem, 1.3vw, 1.2rem);
+  padding: 6px var(--edge) 10px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--edge);
+  scrollbar-width: none;
+  list-style: none;
+  --fade: min(64px, var(--edge));
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+/* Fade only the edges that still have content to scroll to. */
+.track[data-prev="true"][data-next="false"] {
+  mask-image: linear-gradient(to right, transparent, #000 var(--fade));
+}
+.track[data-prev="false"][data-next="true"] {
+  mask-image: linear-gradient(to left, transparent, #000 var(--fade));
+}
+.track[data-prev="true"][data-next="true"] {
+  mask-image: linear-gradient(to right, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent);
+}
+
+.row[data-variant="ranked"] .track {
+  gap: clamp(0.4rem, 1vw, 0.9rem);
+}
+
+.item {
+  scroll-snap-align: start;
+  min-width: 0;
+}
+
+/* Entrance for rows that start below the fold: the heading settles, then cards follow in a short stagger. */
+.row[data-animate="true"]:not([data-visible="true"]) .head,
+.row[data-animate="true"]:not([data-visible="true"]) .item {
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+.row[data-visible="true"] .head,
+.row[data-visible="true"] .item {
+  transition:
+    opacity var(--dur) var(--ease-out),
+    transform var(--dur) var(--ease-out);
+}
+
+.row[data-visible="true"] .item {
+  transition-delay: calc(var(--i) * 45ms + 80ms);
+}
+
+@media (max-width: 640px) {
+  .arrow {
+    display: none;
+  }
+
+  .seeAll {
+    margin-right: 0;
+  }
+}

@@ -1,92 +1,126 @@
-import React, { useState, useEffect } from "react";
-import { IconMenu2, IconUser } from "@tabler/icons-react";
-import Link from "next/link";
-import Image from "next/image"; 
-import Sidebar from "./Sidebar";
-import SearchBar from "./SearchBar";
-import styles from "@/styles/Home.module.css";
+import Link from "next/link"
+import { useRouter } from "next/router"
+import { useEffect, useState, useSyncExternalStore } from "react"
+import { IconMenu2, IconSearch, IconX } from "@tabler/icons-react"
+import Dialog from "./Dialog"
+import SearchDialog from "./SearchDialog"
+import { useHydrated, useWatchlist } from "@/hooks/useWatchlist"
+import styles from "@/styles/Header.module.css"
 
-interface HeaderProps {
-  onSearch: (query: string) => void;
+const NAV = [
+  { href: "/browse", label: "Discover" },
+  { href: "/collections", label: "Collections" },
+  { href: "/watchlist", label: "My List" },
+]
+
+export function Wordmark() {
+  return (
+    <span className={styles.wordmark}>
+      Hotflix<span className={styles.dot}>.</span>
+    </span>
+  )
 }
 
-const Header: React.FC<HeaderProps> = ({ onSearch }) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const [user, setUser] = useState<{
-    name?: string;
-    email?: string;
-    watchStreak?: number;
-  } | null>(null);
+const subscribeScroll = (onChange: () => void) => {
+  window.addEventListener("scroll", onChange, { passive: true })
+  return () => window.removeEventListener("scroll", onChange)
+}
 
-  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
-  const toggleProfileDropdown = () => setIsProfileDropdownOpen(!isProfileDropdownOpen);
-  const closeSidebar = () => setIsSidebarOpen(false);
+export default function Header({ overlay = false }: { overlay?: boolean }) {
+  const router = useRouter()
+  // A boolean snapshot, so React only re-renders when crossing the threshold, not on every scroll event.
+  const scrolled = useSyncExternalStore(subscribeScroll, () => window.scrollY > 12, () => false)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const { list } = useWatchlist()
+  const hydrated = useHydrated()
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedUser = JSON.parse(localStorage.getItem("userProfile") || "{}");
-      setUser(storedUser);
+    const onKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement
+      const typing = target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)
+      if ((e.key === "k" && (e.metaKey || e.ctrlKey)) || (e.key === "/" && !typing)) {
+        e.preventDefault()
+        setSearchOpen(true)
+      }
     }
-  }, []);
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
+  }, [])
+
+  const isActive = (href: string) => router.pathname === href || router.pathname.startsWith(`${href}/`)
+  const count = hydrated ? list.length : 0
 
   return (
     <>
-      <header className={styles.header}>
-        <div className={styles.headerContent}>
-          {/* Sidebar Toggle Button */}
-          <button
-            className={styles.searchIcon}
-            onClick={toggleSidebar}
-            aria-label="Toggle Sidebar"
-          >
-            <IconMenu2 />
-          </button>
-
-          {/* My Logo */}
-          <Link href="/" className="logo-link">
-            <Image
-              src="/favicon.ico"
-              alt="Logo"
-              className={styles.logo}
-              width={40}
-              height={40} 
-              priority // Ensures the logo is loaded quickly
-            />
+      <header className={styles.header} data-solid={!overlay || scrolled}>
+        <div className={`shell ${styles.inner}`}>
+          <Link href="/" className={styles.brand} aria-label="Hotflix home">
+            <Wordmark />
           </Link>
 
-          {/* Right Side Icons */}
-          <div className={styles.rightIcons}>
-            <SearchBar onSearch={onSearch} />
+          <nav className={styles.nav} aria-label="Primary">
+            {NAV.map(({ href, label }) => (
+              <Link key={href} href={href} className={styles.navLink} aria-current={isActive(href) ? "page" : undefined}>
+                {label}
+                {href === "/watchlist" && count > 0 && <span className={styles.count}>{count}</span>}
+              </Link>
+            ))}
+          </nav>
 
-            <div className={styles.profileContainer} onClick={toggleProfileDropdown}>
-              {/* User Icons */}
-              <IconUser className={styles.userIcon} />
-
-              {isProfileDropdownOpen && (
-                <div className={styles.profileDropdown}>
-                  <p>
-                    <strong>Name:</strong> {user?.name || "Guest"}
-                  </p>
-                  <p>
-                    <strong>Email:</strong> {user?.email || "N/A"}
-                  </p>
-                  <p>
-                    <strong>Watch Streak:</strong> {user?.watchStreak || 0} day(s)
-                  </p>
-                  <button onClick={() => alert("Logout functionality coming soon!")}>
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
+          <div className={styles.tools}>
+            <button className={styles.search} onClick={() => setSearchOpen(true)} aria-label="Search films">
+              <IconSearch size={17} stroke={1.8} />
+              <span className={styles.searchLabel}>Search films</span>
+              <kbd className={styles.kbd}>/</kbd>
+            </button>
+            <button className={`icon-btn ${styles.menuBtn}`} onClick={() => setMenuOpen(true)} aria-label="Open menu">
+              <IconMenu2 size={21} stroke={1.7} />
+            </button>
           </div>
         </div>
       </header>
 
-      <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
-    </>
-  );
-};
+      {searchOpen && <SearchDialog onClose={() => setSearchOpen(false)} />}
 
-export default Header;
+      {menuOpen && (
+        <Dialog label="Menu" variant="sheet" onClose={() => setMenuOpen(false)} panelClassName={styles.sheet}>
+          {(close) => (
+            <>
+              <div className={styles.sheetTop}>
+                <Wordmark />
+                <button className="icon-btn" onClick={close} aria-label="Close menu">
+                  <IconX size={22} stroke={1.7} />
+                </button>
+              </div>
+              <nav className={styles.sheetNav} aria-label="Mobile">
+                {[...NAV, { href: "/about", label: "About" }].map(({ href, label }, i) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={styles.sheetLink}
+                    style={{ "--i": i } as React.CSSProperties}
+                    aria-current={isActive(href) ? "page" : undefined}
+                    onClick={close}
+                  >
+                    {label}
+                    {href === "/watchlist" && count > 0 && <span className={styles.count}>{count}</span>}
+                  </Link>
+                ))}
+              </nav>
+              <button
+                className="btn btn-ghost"
+                onClick={() => {
+                  close()
+                  setSearchOpen(true)
+                }}
+              >
+                <IconSearch size={17} /> Search films
+              </button>
+            </>
+          )}
+        </Dialog>
+      )}
+    </>
+  )
+}

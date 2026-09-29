@@ -1,94 +1,50 @@
-# **Hotflix - Movie Watchlist and Recommendation App By C-J7** 🎬  
+# Hotflix
 
-Welcome to **Hotflix**, a sleek and feature-rich movie application that allows users to discover movies, add them to a personal watchlist, and explore tailored recommendations. Inspired by the simplicity and functionality of streaming platforms, Hotflix aims to deliver a clean and user-friendly experience.
+A film discovery app: trending picks, a daily Top 10, curated collections, trailers and a personal watchlist.
 
+**Live:** [hotflix-chi.vercel.app](https://hotflix-chi.vercel.app/)
 
-## **Overview**
+![Hotflix](public/og-image.png)
 
-Hotflix is a Next.js-powered web application designed to provide the following features:  
-- Browse and explore trending movies fetched via the **TMDB API**.  
-- Add or remove movies to/from a personal **Watchlist**.  
-- Watch movie trailers with seamless integration of YouTube.  
-- Explore **similar movies** and genres for tailored recommendations.  
+## What it does
 
-The app prioritizes **functionality** and **performance** while maintaining a clean and intuitive interface.
+- **Tonight's Pick** — an auto-advancing editorial hero drawn from the week's most-watched films
+- **Top 10 today** — a daily ranking with oversized numerals, refreshed hourly
+- **Collections** — 18 genre collections, each with Popular / Top rated / Newest views and infinite scroll
+- **Trailers** — official YouTube trailers in a focused player, fetched on demand rather than upfront
+- **My List** — a watchlist stored in `localStorage`, no account required
+- **Search** — instant, debounced search from anywhere on the site (press `/`)
 
+## Stack
 
-## **Features**
+Next.js 16 (Pages Router) · React 19 · TypeScript · CSS Modules · [TMDB API](https://www.themoviedb.org/documentation/api)
 
-1. **Landing Page**: A sleek cinematic sign-in page.  
-2. **Homepage**:  
-   - Browse movies fetched dynamically using the TMDB API.  
-   - Filter movies by **genre**, **release year**, and other parameters.  
-3. **Watchlist**:  
-   - Add or remove movies to/from a dedicated watchlist.  
-   - Stored locally using **Local Storage** for persistence.  
-4. **Recommendations Page**: View recommended or similar movies.  
-5. **Streaming Page**:  
-   - Watch trailers directly via embedded YouTube videos.  
-   - A "Watch Now" Button to watch the full movie via SuperEmbed.
+No UI framework, no client-side data-fetching library, no CSS framework — plain `fetch`, `getStaticProps`/ISR, and hand-written CSS. The whole app is four runtime dependencies.
 
+## Architecture
 
-## **Tech Stack** ⚙️
+- **TMDB calls stay server-side.** `lib/tmdb.ts` is imported only by `getStaticProps` and the three `pages/api/*` routes, so the API key never reaches the browser. Client-side data (search, paginated collections, on-demand trailers) goes through those routes, which set `Cache-Control` headers so Vercel's CDN — not TMDB — serves repeat requests.
+- **Pages are prerendered with ISR.** The homepage, `/browse`, `/collections/*` and individual `/movie/[id]` pages are static HTML regenerated on a schedule (1 hour to 1 day depending on how often the data actually changes), so first paint is instant and the app stays indexable.
+- **Motion respects `prefers-reduced-motion`** globally, and the auto-advancing hero and background carousels both check it explicitly before animating.
 
-The Hotflix app leverages modern technologies for performance and maintainability:
+## Getting started
 
-| **Technology**        | **Description**                                |
-|------------------------|-----------------------------------------------|
-| **Next.js**           | React framework for server-side rendering.    |
-| **TypeScript**        | Static typing for better code quality.        |
-| **TMDB API**          | Fetch movie data (details, trailers, posters).|
-| **YouTube Embed**     | Seamless trailer streaming integration.       |
-| **Local Storage**     | Client-side persistence for the watchlist.    |
-| **Vercel**            | Deployment platform for hosting the app.      |
-| **CSS Modules**       | Scoped and maintainable component styling.    |
-| **Tabler Icons**      | Icon set for enhancing UI design.             |
+```bash
+npm install
+cp .env.example .env.local   # add your TMDB API key
+npm run dev
+```
 
+Get a free TMDB v3 API key at [themoviedb.org/settings/api](https://www.themoviedb.org/settings/api).
 
-## **Deployment**
+```bash
+npm run build       # production build
+npm run lint         # eslint
+npm run typecheck   # tsc --noEmit
+```
 
-The Hotflix app is live and can be accessed here:  
-🔗 [Hotflix on Vercel](https://hotflix-chi.vercel.app/)  
+## Credit
 
+Film data and images from [TMDB](https://www.themoviedb.org). This product uses the TMDB API but is not endorsed or certified by TMDB.
 
-## **Setup Instructions**
-
-Follow these steps to run Hotflix locally:
-
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/C-J7/hotflix
-   cd hotflix
-   ```
-
-2. **Install Dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Set Up Environment Variables**  
-   Create a `.env.local` file in the root directory and add your TMDB API key:  
-   ```env
-   NEXT_PUBLIC_TMDB_API_KEY=YOUR_TMDB_API_KEY
-   ```
-
-4. **Run the Development Server**
-   ```bash
-   npm run dev
-   ```
-
-   The app will be available at: `http://localhost:3000`
-
-
-## **Purpose**
-
-Hotflix was built to demonstrate the capabilities of **modern web development** frameworks like **Next.js** and how seamlessly APIs and local data can work together. The app emphasizes performance, usability, and functionality, making it a great starting point for anyone exploring **full-stack movie applications**.
-
-Thank you for checking out Hotflix! I hope you find it helpful and inspiring. Contributions are welcome! 😊  
-
-
-## **REACH OUT**
-
-If you have any questions, suggestions, or feedback, feel free to reach out:  
-**C-J7**  
-🔗 [GitHub](https://github.com/C-J7)  
+Built by [Bamgbose Christian](https://bamgbosechristian.me).

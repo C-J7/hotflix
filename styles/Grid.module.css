@@ -1,0 +1,46 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(138px, 14vw, 186px), 1fr));
+  gap: clamp(1.5rem, 2.4vw, 2.2rem) clamp(0.85rem, 1.4vw, 1.3rem);
+  list-style: none;
+}
+
+.cell {
+  min-width: 0;
+  animation: cellIn 520ms var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 28ms);
+}
+
+@keyframes cellIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+.skeletonPoster {
+  aspect-ratio: 2 / 3;
+  border-radius: var(--radius);
+}
+
+.skeletonLine {
+  height: 14px;
+  width: 70%;
+  margin-top: 0.8rem;
+  border-radius: var(--radius-sm);
+}
+
+.more {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  padding-block: 3rem 1rem;
+  color: var(--text-muted);
+}
+
+.end {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--text-faint);
+}
