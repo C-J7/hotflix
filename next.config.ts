@@ -3,6 +3,8 @@ import type { NextConfig } from "next"
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // Next.js otherwise writes AGENTS.md/CLAUDE.md/etc. on every `next dev` run.
+  agentRules: false,
   images: {
     // TMDB's CDN already serves pre-sized images; re-optimizing them would only burn Vercel's image quota.
     unoptimized: true,
